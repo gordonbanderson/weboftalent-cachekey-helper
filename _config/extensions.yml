@@ -1,0 +1,6 @@
+---
+Name: weboftalent-cachekey-extension
+---
+SiteTree:
+  extensions:
+    ['CacheKeyHelper']
