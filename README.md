@@ -38,7 +38,7 @@ Remember that a /dev/build is required for any configuration changes to be effec
 
 ##Usage in Templates
 ### Caching Classes of Items
-When creating a cache key, one can now use
+When creating a cache key, one can now use the following in a template:
 
 	$CacheKey('someprefix','YourClassName')
 
@@ -63,6 +63,7 @@ The current page is cached under CurrentPage
 
 ### Caching Child Folder Rendering
 If one is rendering a folder of child items, a common enough idiom, the most recent child item LastEdited date is under the key ChildPage.
+
 	<% cached ID,$CacheKey('galleryofpics', 'ChildPage') %>
 	... render gallery of images here ...
 	<% end_cached %>
