@@ -1,3 +1,3 @@
 CacheKeyHelper:
   SiteTree: ['Page']
-  DataObject: ['Member','Group']
+  DataObject: ['Member','Group','File']
