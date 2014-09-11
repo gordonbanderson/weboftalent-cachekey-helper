@@ -10,6 +10,21 @@ class CacheKeyHelper extends DataExtension
 	Flag to ensure that the query is run only once
 	*/
 	private static $cachekeysinitialised = false;
+
+
+	/*
+	Append a url parameter to the cache key.  This is useful for example when pagination
+	*/
+	public function CacheKeyGetParam($paramname) {
+		$getvars = Controller::curr()->request;
+		$result='';
+		if (isset($getvars[$paramname])) {
+			$result=$getvars[$paramname];
+		}
+
+		return $result;
+
+	}
 	
 
 	/*
