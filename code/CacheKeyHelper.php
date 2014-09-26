@@ -13,6 +13,7 @@ class CacheKeyHelper extends DataExtension
 
 
 	/*
+<<<<<<< HEAD
 	Obtain a part of the cache key fragment based on a parameter name
 	
 	In a template this would look like <tt>$CacheParamKey('start')</tt>
@@ -32,6 +33,19 @@ class CacheKeyHelper extends DataExtension
 		return '_'.$param . '_' . $value;
 	}
 
+	/*
+		Append a url parameter to the cache key.  This is useful for example when pagination
+	*/
+	public function CacheKeyGetParam($paramname) {
+		$getvars = Controller::curr()->request;
+		$result='';
+		if (isset($getvars[$paramname])) {
+			$result=$getvars[$paramname];
+		}
+
+		return $result;
+
+	}
 	
 
 	/*
