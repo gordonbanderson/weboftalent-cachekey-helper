@@ -10,7 +10,51 @@ class CacheKeyHelper extends DataExtension
 	Flag to ensure that the query is run only once
 	*/
 	private static $cachekeysinitialised = false;
+
+
+	/*
+<<<<<<< HEAD
+	Obtain a part of the cache key fragment based on a parameter name
 	
+	In a template this would look like <tt>$CacheParamKey('start')</tt>
+	*/
+	function CacheParamKey($param) {
+		if (!self::$cachekeysinitialised) {
+			$this->prime_cache_keys();
+			self::$cachekeysinitialised = true;
+		}
+
+		$key = 'PARAM_'.$param;
+		$value=null;
+		if (isset(self::$_LastEditedValues[$key])) {
+			$value= self::$_LastEditedValues[$key];
+		};
+
+		return '_'.$param . '_' . $value;
+	}
+
+	/*
+		Append a url parameter to the cache key.  This is useful for example when pagination
+	*/
+	public function CacheKeyGetParam($paramname) {
+		$getvars = Controller::curr()->request;
+		$result='';
+		if (isset($getvars[$paramname])) {
+			$result=$getvars[$paramname];
+		}
+
+		return $result;
+
+	}
+	
+
+	/*
+	Old name for this method, as request params now included
+	*/
+	function CacheKey($prefix, $classname) {
+		return$this->CacheDataKey($prefix, $classname);
+	}
+
 
 	/*
 	Obtain a cache for a given class with a given prefix, to be used in templates for partial caching.  It is designed to ensure that the
@@ -20,7 +64,7 @@ class CacheKeyHelper extends DataExtension
 	@param $prefix - an arbitrary prefix to differentiate from different areas of a page of pages.  e.g. folderofarticles,homepagearticles
 	@param $classname - the classname that we wish to find the most recent last edited value of
 	*/
-	function CacheKey($prefix, $classname) {
+	function CacheDataKey($prefix, $classname) {
 		// only initialise the cache keys once
 		if (!self::$cachekeysinitialised) {
 			$this->prime_cache_keys();
@@ -100,6 +144,12 @@ class CacheKeyHelper extends DataExtension
 		$sql .= "(SELECT MAX(LastEdited) from SiteTree_Live) as SiteTreeLastEdited;";
 							
 		$records = DB::query($sql)->first();
-		self::$_LastEditedValues = $records;
+
+		// now append the request params, stored as PARAM_<parameter name> -> parameter value
+		foreach (Controller::curr()->request->requestVars() as $k => $v) {
+			$records["PARAM_".$k] = $v;
+		}
+	
+	self::$_LastEditedValues = $records;
 	}
 }
