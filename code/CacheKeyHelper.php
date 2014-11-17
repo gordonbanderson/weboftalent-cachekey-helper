@@ -13,7 +13,6 @@ class CacheKeyHelper extends DataExtension
 
 
 	/*
-<<<<<<< HEAD
 	Obtain a part of the cache key fragment based on a parameter name
 	
 	In a template this would look like <tt>$CacheParamKey('start')</tt>
