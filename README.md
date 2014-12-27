@@ -96,6 +96,11 @@ Site configuration is cached under SiteConfig.
 	... $SiteConfig.TagLine ...
 	<% end_cached %>
 
+### Caching via Parameters
+In the case of search results it is useful to be able to cache by a URL parameter.
+
+     <% cached ID,LastEdited,$CacheParamKey('start') %>
+
 ### Current Member
 Member is slightly problematic in that the LastEdited field is updated every page load, due to updating the LastVisited field. This module opts for a five minute cache, guess it should be made configurable.  Note that post 3.1 trunk of SilverStripe has LastVisited turned off, and it can be added by an extension thus http://doc.silverstripe.org/framework/en/trunk/howto/track-member-logins
 
