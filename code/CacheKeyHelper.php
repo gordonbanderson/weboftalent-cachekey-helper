@@ -51,7 +51,7 @@ class CacheKeyHelper extends DataExtension
 	Old name for this method, as request params now included
 	*/
 	function CacheKey($prefix, $classname) {
-		return$this->CacheDataKey($prefix, $classname);
+		return $this->CacheDataKey($prefix, $classname);
 	}
 
 
