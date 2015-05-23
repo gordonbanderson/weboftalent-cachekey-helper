@@ -22,11 +22,18 @@ class CacheKeyHelper extends DataExtension
 			self::$cachekeysinitialised = true;
 		}
 
+		// check URL parameters
 		$key = 'PARAM_'.$param;
 		$value=null;
 		if (isset(self::$_LastEditedValues[$key])) {
 			$value= self::$_LastEditedValues[$key];
 		};
+
+		// if still null check parameters from routing configuration
+		if ($value == null) {
+			$request = Controller::curr()->request;
+			$value = $request->param($param);
+		}
 
 		return '_'.$param . '_' . $value;
 	}
