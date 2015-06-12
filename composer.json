@@ -2,21 +2,19 @@
 	"name": "weboftalent/cachekeyhelper",
 	"description": "Centralise partial queries into a single query to improve performance",
 	"type": "silverstripe-module",
-	"keywords": ["silverstripe", "caching","partials", "performance","weboftalent"],
-	"authors": [
-		{
-			"name": "Gordon Anderson",
-			"email": "gordon.b.anderson@gmail.com",
-			"homepage": "https://github.com/gordonbanderson/weboftalent-cachekey-helper",
-			"role": "Developer"
-		}
-	],
-    "support": {
-        "issues": "https://github.com/gordonbanderson/weboftalent-cachekey-helper/issues"
-    },
-	"require":
-	{
+	"keywords": ["silverstripe", "caching", "partials", "performance", "weboftalent"],
+	"authors": [{
+		"name": "Gordon Anderson",
+		"email": "gordon.b.anderson@gmail.com",
+		"homepage": "https://github.com/gordonbanderson/weboftalent-cachekey-helper",
+		"role": "Developer"
+	}],
+	"support": {
+		"issues": "https://github.com/gordonbanderson/weboftalent-cachekey-helper/issues"
+	},
+	"require": {
 		"silverstripe/framework": "~3.1",
 		"weboftalent/indexlastedited": "~3.1"
-	}
+	},
+	"license": "MIT"
 }

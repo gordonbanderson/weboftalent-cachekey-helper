@@ -96,6 +96,11 @@ Site configuration is cached under SiteConfig.
 	... $SiteConfig.TagLine ...
 	<% end_cached %>
 
+### Caching via Parameters
+In the case of search results it is useful to be able to cache by a URL parameter.
+
+     <% cached ID,LastEdited,$CacheParamKey('start') %>
+
 ### Current Member
 Member is slightly problematic in that the LastEdited field is updated every page load, due to updating the LastVisited field. This module opts for a five minute cache, guess it should be made configurable.  Note that post 3.1 trunk of SilverStripe has LastVisited turned off, and it can be added by an extension thus http://doc.silverstripe.org/framework/en/trunk/howto/track-member-logins
 
@@ -104,3 +109,14 @@ A common idiom is a logged in bar, with the user's name and possibly image.
 	<% cached $CacheKey('memberloggedinbar', 'CurrentMember') %>
 	... Member details here ...
 	<% end_cached %>
+
+
+# IMPORTANT - Default SS_Cache Expiry Time
+The default expiry time for the SilverStripe cache is only 10 minutes, meaning that sites with
+relatively static data will still be unecessarily making calls to the database for rendering
+purposes.  To mitigate this add the following to a relevant _config.php
+
+```php
+// set all caches to 3 hours
+SS_Cache::set_cache_lifetime('cacheblock', 60*60*3);
+```
