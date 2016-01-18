@@ -1,4 +1,21 @@
 #Introduction
+[![Build Status](https://travis-ci.org/gordonbanderson/weboftalent-cachekey-helper.svg?branch=3.1)](https://travis-ci.org/gordonbanderson/weboftalent-cachekey-helper)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/gordonbanderson/weboftalent-cachekey-helper/badges/quality-score.png?b=3.1)](https://scrutinizer-ci.com/g/gordonbanderson/weboftalent-cachekey-helper/?branch=3.1)
+[![Code Coverage](https://scrutinizer-ci.com/g/gordonbanderson/weboftalent-cachekey-helper/badges/coverage.png?b=3.1)](https://scrutinizer-ci.com/g/gordonbanderson/weboftalent-cachekey-helper/?branch=3.1)
+[![Build Status](https://scrutinizer-ci.com/g/gordonbanderson/weboftalent-cachekey-helper/badges/build.png?b=3.1)](https://scrutinizer-ci.com/g/gordonbanderson/weboftalent-cachekey-helper/build-status/3.1)
+[![codecov.io](https://codecov.io/github/gordonbanderson/weboftalent-cachekey-helper/coverage.svg?branch=3.1)](https://codecov.io/github/gordonbanderson/weboftalent-cachekey-helper?branch=3.1)
+
+[![Latest Stable Version](https://poser.pugx.org/weboftalent/cachekeyhelper/version)](https://packagist.org/packages/weboftalent/cachekeyhelper)
+[![Latest Unstable Version](https://poser.pugx.org/weboftalent/cachekeyhelper/v/unstable)](//packagist.org/packages/weboftalent/cachekeyhelper)
+[![Total Downloads](https://poser.pugx.org/weboftalent/cachekeyhelper/downloads)](https://packagist.org/packages/weboftalent/cachekeyhelper)
+[![License](https://poser.pugx.org/weboftalent/cachekeyhelper/license)](https://packagist.org/packages/weboftalent/cachekeyhelper)
+[![Monthly Downloads](https://poser.pugx.org/weboftalent/cachekeyhelper/d/monthly)](https://packagist.org/packages/weboftalent/cachekeyhelper)
+[![Daily Downloads](https://poser.pugx.org/weboftalent/cachekeyhelper/d/daily)](https://packagist.org/packages/weboftalent/cachekeyhelper)
+
+[![Dependency Status](https://www.versioneye.com/php/weboftalent:cachekeyhelper/badge.svg)](https://www.versioneye.com/php/weboftalent:cachekeyhelper)
+[![Reference Status](https://www.versioneye.com/php/weboftalent:cachekeyhelper/reference_badge.svg?style=flat)](https://www.versioneye.com/php/weboftalent:cachekeyhelper/references)
+
+![codecov.io](https://codecov.io/github/gordonbanderson/weboftalent-cachekey-helper/branch.svg?branch=3.1)
 In order to improve the performance of a SilverStripe site it is very useful to use partial caching to cache fragments of a page against a given condition, usually either a LastEdited field or something of periodic time, e.g. caching a copy of a twitter feed on a site and updating it every 5 minutes.  When an item is edited the LastEdited date is updated, or when the period of time elapses the cache is 'busted' and  the partial fragement on the page is updated with the new rendering.  Whilst this technique works it still requires a hit against the database for each partially cached fragement of a page.  So why not get them all in a single query?
 
 #Technique
