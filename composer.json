@@ -14,7 +14,7 @@
 	},
 	"require": {
 		"silverstripe/framework": "~3.1",
-		"weboftalent/indexlastedited": "~3.1"
+		"weboftalent/indexlastedited": "~1"
 	},
 	"license": "MIT"
 }
