@@ -1,3 +1,4 @@
+
 language: php
 
 sudo: false
@@ -12,6 +13,8 @@ php:
   - 5.4
   - 5.5
   - 5.6
+  - hhvm-nightly
+  - 7.0
 
 before_install:
   - pip install --user codecov
@@ -25,6 +28,7 @@ env:
 matrix:
   allow_failures:
     - php: hhvm-nightly
+    - php: 7.0
   include:
     - php: 5.6
       env: DB=PGSQL
@@ -54,7 +58,6 @@ before_script:
   - git clone git://github.com/silverstripe-labs/silverstripe-travis-support.git ~/travis-support
   - php ~/travis-support/travis_setup.php --source `pwd` --target ~/builds/ss
   - cd ~/builds/ss
-  - composer require satooshi/php-coveralls
 
 script:
   # Execute tests with no coverage.  This is the fastest option
@@ -68,3 +71,4 @@ after_script:
   - cd ~/build/$TRAVIS_REPO_SLUG
   - wget https://scrutinizer-ci.com/ocular.phar
   - "if [ \"$COVERAGE\" = \"1\" ]; then travis_retry codecov && travis_retry php ocular.phar code-coverage:upload --format=php-clover coverage.clover; fi"
+
