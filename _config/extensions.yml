@@ -1,6 +1,6 @@
 ---
 Name: weboftalent-cachekey-extension
 ---
-SiteTree:
+SilverStripe\CMS\Model\SiteTree:
   extensions:
-    ['CacheKeyHelper']
+    - CacheKeyHelper

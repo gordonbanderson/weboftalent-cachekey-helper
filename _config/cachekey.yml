@@ -1,3 +1,7 @@
 CacheKeyHelper:
-  SiteTree: ['Page']
-  DataObject: ['Member','Group','File']
+  SilverStripe\CMS\Model\SiteTree:
+    - Page
+  SilverStripe\ORM\DataObject:
+    - SilverStripe\Security\Member
+    - SilverStripe\Security\Group
+    - SilverStripe\Assets\File

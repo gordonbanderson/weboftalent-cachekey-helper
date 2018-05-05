@@ -1,5 +1,13 @@
 <?php
 
+use SilverStripe\Control\Controller;
+use SilverStripe\Core\Config\Config;
+use SilverStripe\CMS\Model\SiteTree;
+use SilverStripe\ORM\DataObject;
+use SilverStripe\Security\Member;
+use SilverStripe\ORM\DB;
+use SilverStripe\ORM\DataExtension;
+
 class CacheKeyHelper extends DataExtension
 {
     /*
@@ -100,7 +108,7 @@ class CacheKeyHelper extends DataExtension
     private function prime_cache_keys()
     {
         // get the classes to get a cache key with from the site tree
-        $classes = Config::inst()->get($this->class, 'SiteTree');
+        $classes = Config::inst()->get($this->class, SiteTree::class);
 
         $sql = 'SELECT (SELECT MAX(LastEdited) FROM SiteTree_Live WHERE ParentID = '.
             $this->owner->ID.') AS ChildPageLastEdited,';
@@ -114,7 +122,7 @@ class CacheKeyHelper extends DataExtension
         }
 
         // get the classes to get a cache key with that are not in the site tree
-        $classes = Config::inst()->get($this->class, 'DataObject');
+        $classes = Config::inst()->get($this->class, DataObject::class);
 
         if ($classes) {
             foreach ($classes as $classname) {

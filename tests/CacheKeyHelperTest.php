@@ -1,5 +1,7 @@
 <?php
 
+use SilverStripe\Dev\SapphireTest;
+
 class CacheKeyHelperTest extends SapphireTest {
 	public function testCacheParamKey() {
 		$this->markTestSkipped('TODO');
