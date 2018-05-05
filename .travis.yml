@@ -1,74 +1,44 @@
-
 language: php
 
-sudo: false
+dist: trusty
 
-addons:
-  apt:
-    packages:
-      - tidy
-
-php:
-  - 5.3
-  - 5.4
-  - 5.5
-  - 5.6
-  - hhvm-nightly
-  - 7.0
-
-before_install:
-  - pip install --user codecov
+cache:
+  directories:
+    - $HOME/.composer/cache/files
 
 env:
   global:
-    - DB=MYSQL CORE_RELEASE=3.1
-    - MODULE_PATH=cachekeyhelper
-    - COVERAGE=0
+    - COMPOSER_ROOT_VERSION=4.0.x-dev
 
 matrix:
-  allow_failures:
-    - php: hhvm-nightly
-    - php: 7.0
   include:
     - php: 5.6
-      env: DB=PGSQL
-    - php: 5.6
-      env: DB=SQLITE
-    - php: hhvm
-      env: DB=MYSQL
-    - php: 5.6
-      env: DB=MYSQL CORE_RELEASE=3.2 COVERAGE=1
-    - php: 5.6
-      env: DB=PGSQL CORE_RELEASE=3.2
-    - php: 5.6
-      env: DB=SQLITE CORE_RELEASE=3.2
-    - php: 5.5
-      env: DB=MYSQL CORE_RELEASE=3.2
-    - php: 5.4
-      env: DB=MYSQL CORE_RELEASE=3.2
-    - php: 5.3
-      env: DB=MYSQL CORE_RELEASE=3.2
-    - php: hhvm
-      env: DB=MYSQL CORE_RELEASE=3.2
-
+      env: DB=MYSQL INSTALLER_VERSION=4.0.x-dev PHPCS_TEST=1 PHPUNIT_TEST=1
+    - php: 7.0
+      env: DB=PGSQL INSTALLER_VERSION=4.1.x-dev PHPUNIT_TEST=1
+    - php: 7.1
+      env: DB=MYSQL INSTALLER_VERSION=4.2.x-dev PHPUNIT_COVERAGE_TEST=1
+    - php: 7.2
+      env: DB=MYSQL INSTALLER_VERSION=4.x-dev PHPUNIT_TEST=1
 
 before_script:
+  # Init PHP
   - phpenv rehash
-  - composer self-update || true
-  - git clone git://github.com/silverstripe-labs/silverstripe-travis-support.git ~/travis-support
-  - php ~/travis-support/travis_setup.php --source `pwd` --target ~/builds/ss
-  - cd ~/builds/ss
+  - phpenv config-rm xdebug.ini
+
+  # Install composer dependencies
+  - composer validate
+  - echo $INSTALLER_VERSION
+  - composer require --prefer-source --no-update silverstripe/recipe-cms:1.1.x-dev
+  - if [[ $DB == PGSQL ]]; then composer require --no-update silverstripe/postgresql:2.0.x-dev; fi
+  - composer install --prefer-source --no-interaction --no-progress --no-suggest --optimize-autoloader --verbose --profile
+  - vendor/bin/sake flush=all
+
+  - php vendor/silverstripe/framework/tests/dump_constants.php
 
 script:
-  # Execute tests with no coverage.  This is the fastest option
-  - "if [ \"$COVERAGE\" = \"0\" ]; then vendor/bin/phpunit $MODULE_PATH/tests/; fi"
+  - if [[ $PHPUNIT_TEST ]]; then find . | grep Sapphire && vendor/bin/phpunit tests/; fi
+  - if [[ $PHPUNIT_COVERAGE_TEST ]]; then phpdbg -qrr vendor/bin/phpunit --coverage-clover=coverage.xml tests/; fi
 
-  # Execute tests with coverage.  Do this for a small
-  - "if [ \"$COVERAGE\" = \"1\" ]; then vendor/bin/phpunit --coverage-clover=coverage.clover $MODULE_PATH/tests/; fi"
-
-after_script:
-  - "if [ \"$COVERAGE\" = \"1\" ]; then mv coverage.clover ~/build/$TRAVIS_REPO_SLUG/; fi"
-  - cd ~/build/$TRAVIS_REPO_SLUG
-  - wget https://scrutinizer-ci.com/ocular.phar
-  - "if [ \"$COVERAGE\" = \"1\" ]; then travis_retry codecov && travis_retry php ocular.phar code-coverage:upload --format=php-clover coverage.clover; fi"
-
+after_success:
+  - if [[ $PHPUNIT_COVERAGE_TEST ]]; then bash <(curl -s https://codecov.io/bash) -f coverage.xml; fi
