@@ -1,4 +1,5 @@
 <?php
+namespace WebOfTalent\CacheKeyHelper;
 
 use SilverStripe\Control\Controller;
 use SilverStripe\Core\Config\Config;
