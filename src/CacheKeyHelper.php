@@ -112,14 +112,14 @@ class CacheKeyHelper extends DataExtension
         //$classes = Config::inst()->get($this->class, SiteTree::class);
         $classes = $this->owner->config()->get(SiteTree::class);
 
-        $sql = 'SELECT (SELECT MAX(LastEdited) AS ChildPageLastEdited FROM SiteTree_Live WHERE ParentID = '.
-            $this->owner->ID.'),';
+        $sql = 'SELECT (SELECT MAX(LastEdited) FROM SiteTree_Live WHERE ParentID = '.
+            $this->owner->ID.') AS ChildPageLastEdited,';
 
         if ($classes) {
             foreach ($classes as $classname) {
                 $tableName = $this->getTableName($classname);
-                $stanza = "(SELECT MAX(LastEdited) AS {$tableName}LastEdited from SiteTree_Live "
-                    . "where ClassName = '". $classname."'), ";
+                $stanza = "(SELECT MAX(LastEdited) from SiteTree_Live "
+                    . "where ClassName = '". $classname."')  AS {$tableName}LastEdited , ";
                 $sql .= $stanza;
             }
         }
@@ -130,7 +130,7 @@ class CacheKeyHelper extends DataExtension
         if ($classes) {
             foreach ($classes as $classname) {
                 $tableName = $this->getTableName($classname);
-                $stanza = '(SELECT MAX(LastEdited)  AS ' .$tableName .'LastEdited  from `'.$tableName.'`), ';
+                $stanza = '(SELECT MAX(LastEdited) from `'.$tableName.'`) AS ' .$tableName .'LastEdited, ';
                 $sql .= $stanza;
             }
         }
@@ -156,7 +156,7 @@ class CacheKeyHelper extends DataExtension
   //          Member::currentUserID().') as CurrentMemberLastEdited,';
 
         // site config
-        $sql .= "(SELECT LastEdited from `SiteConfig` AS SiteConfigLastEdited), ";
+        $sql .= "(SELECT LastEdited from `SiteConfig`) AS SiteConfigLastEdited, ";
 
         // the current actual page
         $sql .= "(SELECT LastEdited from SiteTree_Live where ID='".$this->owner->ID.
