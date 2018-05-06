@@ -1,5 +1,5 @@
 <?php
-namespace WebOfTalent\CacheKeyHelper\Tests;
+namespace WebOfTalent\Cache\Tests;
 
 use SilverStripe\Dev\SapphireTest;
 

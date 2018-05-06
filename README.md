@@ -1,4 +1,4 @@
-#Introduction
+# Introduction
 [![Build Status](https://travis-ci.org/gordonbanderson/weboftalent-cachekey-helper.svg?branch=master)](https://travis-ci.org/gordonbanderson/weboftalent-cachekey-helper)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/gordonbanderson/weboftalent-cachekey-helper/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/gordonbanderson/weboftalent-cachekey-helper/?branch=master)
 [![Build Status](https://scrutinizer-ci.com/g/gordonbanderson/weboftalent-cachekey-helper/badges/build.png?b=master)](https://scrutinizer-ci.com/g/gordonbanderson/weboftalent-cachekey-helper/build-status/master)
@@ -15,6 +15,7 @@
 [![Reference Status](https://www.versioneye.com/php/weboftalent:cachekeyhelper/reference_badge.svg?style=flat)](https://www.versioneye.com/php/weboftalent:cachekeyhelper/references)
 
 ![codecov.io](https://codecov.io/github/gordonbanderson/weboftalent-cachekey-helper/branch.svg?branch=master)
+
 In order to improve the performance of a SilverStripe site it is very useful to use partial caching to cache fragments of a page against a given condition, usually either a LastEdited field or something of periodic time, e.g. caching a copy of a twitter feed on a site and updating it every 5 minutes.  When an item is edited the LastEdited date is updated, or when the period of time elapses the cache is 'busted' and  the partial fragement on the page is updated with the new rendering.  Whilst this technique works it still requires a hit against the database for each partially cached fragement of a page.  So why not get them all in a single query?
 
 #Technique
@@ -34,9 +35,17 @@ This is useful when trying to identify areas of the site where queries are being
 Every time a page is loaded, the number of cumulative SQL statements executed will be shown in a terminal window.  One needs to do a bit of maths, but it's indicative of whether your dealing with 10s of queries, hundreds of queries or indeed thousands of them.
 
 # Installation
-    git clone git://github.com/gordonbanderson/weboftalent-cache-helper.git
-    cd weboftalent-cache-helper
-    git checkout 3.1
+## SilverStripe 4
+```php
+composer require "weboftalent/cachekeyhelper:^2"
+```
+
+## SilverStripe 3
+```php
+composer require "weboftalent/cachekeyhelper:^1"
+```
+
+
 
 
 # Usage
@@ -47,8 +56,11 @@ Create a file in _config/ of your site or module, called for example cachekeys.y
 By default, Page,Member, and Group already have their most recent LastEdited dates obtained.  If we for example have a class called Article that extends Page, and that Article has Links which extend DataObject then the configuration would look like this:
 
 	CacheKeyHelper:
-	  SiteTree: ['Article']
-	  DataObject: ['Link']
+	  SilverStripe\CMS\Model\SiteTree:
+	    Article
+	  SilverStripe\CMS\Model\SiteTree:
+	    - WebOfTalent\Link\Link
+	    
 
 Remember that a /dev/build is required for any configuration changes to be effected.
 
@@ -116,23 +128,3 @@ Site configuration is cached under SiteConfig.
 In the case of search results it is useful to be able to cache by a URL parameter.
 
      <% cached ID,LastEdited,$CacheParamKey('start') %>
-
-### Current Member
-Member is slightly problematic in that the LastEdited field is updated every page load, due to updating the LastVisited field. This module opts for a five minute cache, guess it should be made configurable.  Note that post 3.1 trunk of SilverStripe has LastVisited turned off, and it can be added by an extension thus http://doc.silverstripe.org/framework/en/trunk/howto/track-member-logins
-
-A common idiom is a logged in bar, with the user's name and possibly image.
-
-	<% cached $CacheKey('memberloggedinbar', 'CurrentMember') %>
-	... Member details here ...
-	<% end_cached %>
-
-
-# IMPORTANT - Default SS_Cache Expiry Time
-The default expiry time for the SilverStripe cache is only 10 minutes, meaning that sites with
-relatively static data will still be unecessarily making calls to the database for rendering
-purposes.  To mitigate this add the following to a relevant _config.php
-
-```php
-// set all caches to 3 hours
-SS_Cache::set_cache_lifetime('cacheblock', 60*60*3);
-```

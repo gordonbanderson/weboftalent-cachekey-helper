@@ -22,11 +22,10 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"WebOfTalent\\CacheKeyHelper\\": "src/",
-			"WebOfTalent\\CacheKeyHelper\\Tests\\": "tests/"
+			"WebOfTalent\\Cache\\": "src/",
+			"WebOfTalent\\Cache\\Tests\\": "tests/"
 		}
 	},
-	,
 	"minimum-stability": "dev",
 	"prefer-stable": true,
 	"license": "MIT"

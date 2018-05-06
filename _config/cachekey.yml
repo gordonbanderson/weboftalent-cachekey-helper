@@ -1,4 +1,7 @@
-CacheKeyHelper:
+---
+Name: cachekeyhelpercore
+---
+WebOfTalent\Cache\CacheKeyHelper:
   SilverStripe\CMS\Model\SiteTree:
     - Page
   SilverStripe\ORM\DataObject:

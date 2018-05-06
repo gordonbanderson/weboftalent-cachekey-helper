@@ -1,5 +1,5 @@
 <?php
-namespace WebOfTalent\CacheKeyHelper;
+namespace WebOfTalent\Cache;
 
 use SilverStripe\Control\Controller;
 use SilverStripe\Core\Config\Config;
@@ -109,26 +109,28 @@ class CacheKeyHelper extends DataExtension
     private function prime_cache_keys()
     {
         // get the classes to get a cache key with from the site tree
-        $classes = Config::inst()->get($this->class, SiteTree::class);
+        //$classes = Config::inst()->get($this->class, SiteTree::class);
+        $classes = $this->owner->config()->get(SiteTree::class);
 
-        $sql = 'SELECT (SELECT MAX(LastEdited) FROM SiteTree_Live WHERE ParentID = '.
-            $this->owner->ID.') AS ChildPageLastEdited,';
+        $sql = 'SELECT (SELECT MAX(LastEdited) AS ChildPageLastEdited FROM SiteTree_Live WHERE ParentID = '.
+            $this->owner->ID.'),';
 
         if ($classes) {
             foreach ($classes as $classname) {
-                $stanza = "(SELECT MAX(LastEdited) from SiteTree_Live where ClassName = '".
-                    $classname."') as ".$classname.'LastEdited,';
+                $tableName = $this->getTableName($classname);
+                $stanza = "(SELECT MAX(LastEdited) AS {$tableName}LastEdited from SiteTree_Live "
+                    . "where ClassName = '". $classname."'), ";
                 $sql .= $stanza;
             }
         }
 
         // get the classes to get a cache key with that are not in the site tree
-        $classes = Config::inst()->get($this->class, DataObject::class);
+        $classes = $this->owner->config()->get(DataObject::class);
 
         if ($classes) {
             foreach ($classes as $classname) {
-                $stanza = '(SELECT MAX(LastEdited) from `'.$classname.'`) as '.
-                $classname.'LastEdited,';
+                $tableName = $this->getTableName($classname);
+                $stanza = '(SELECT MAX(LastEdited)  AS ' .$tableName .'LastEdited  from `'.$tableName.'`), ';
                 $sql .= $stanza;
             }
         }
@@ -150,12 +152,11 @@ class CacheKeyHelper extends DataExtension
 
         // if there is a member, get the last edited - cache for 5 mins (300 seconds), as Member is
         // saved every page request to update last visited
-        $sql .= "(SELECT CONCAT(ID,'_',LastEdited/300) from Member where ID=".
-            Member::currentUserID().') as CurrentMemberLastEdited,';
+  //      $sql .= "(SELECT CONCAT(ID,'_',LastEdited/300) from Member where ID=".
+  //          Member::currentUserID().') as CurrentMemberLastEdited,';
 
         // site config
-        $sql .= "(SELECT LastEdited from SiteConfig where Locale='".$this->owner->Locale.
-            "') as SiteConfigLastEdited,";
+        $sql .= "(SELECT LastEdited from `SiteConfig` AS SiteConfigLastEdited), ";
 
         // the current actual page
         $sql .= "(SELECT LastEdited from SiteTree_Live where ID='".$this->owner->ID.
@@ -168,13 +169,30 @@ class CacheKeyHelper extends DataExtension
         // add a clause to check if any page on the site has changed, a major cache buster
         $sql .= '(SELECT MAX(LastEdited) from SiteTree_Live) as SiteTreeLastEdited;';
 
+        echo "-------\n" . $sql;
+
         $records = DB::query($sql)->first();
+
 
         // now append the request params, stored as PARAM_<parameter name> -> parameter value
         foreach (Controller::curr()->request->requestVars() as $k => $v) {
             $records['PARAM_'.$k] = $v;
         }
 
+
+
         self::$_last_edited_values = $records;
+    }
+
+    /**
+     * @param $classname
+     * @return array
+     */
+    private function getTableName($classname)
+    {
+        $tableName = Config::inst()->get($classname, 'table_name');
+
+        echo "{$classname} => {$tableName}";
+        return $tableName;
     }
 }
