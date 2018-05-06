@@ -171,7 +171,6 @@ class CacheKeyHelper extends DataExtension
         // add a clause to check if any page on the site has changed, a major cache buster
         $sql .= '(SELECT MAX(LastEdited) from SiteTree_Live) as SiteTreeLastEdited;';
 
-       // echo "-------\n" . $sql;
 
         $records = DB::query($sql)->first();
 
@@ -180,8 +179,6 @@ class CacheKeyHelper extends DataExtension
         foreach (Controller::curr()->request->requestVars() as $k => $v) {
             $records['PARAM_'.$k] = $v;
         }
-
-
 
         self::$_last_edited_values = $records;
     }
@@ -193,8 +190,6 @@ class CacheKeyHelper extends DataExtension
     private function getTableName($classname)
     {
         $tableName = Config::inst()->get($classname, 'table_name');
-
-        echo "{$classname} => {$tableName}";
         return $tableName;
     }
 }
