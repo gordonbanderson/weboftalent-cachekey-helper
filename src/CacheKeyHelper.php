@@ -1,7 +1,9 @@
 <?php
 namespace WebOfTalent\Cache;
 
+use SilverStripe\Blog\Model\BlogPost;
 use SilverStripe\Control\Controller;
+use SilverStripe\Core\ClassInfo;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\CMS\Model\SiteTree;
 use SilverStripe\ORM\DataObject;
@@ -109,7 +111,6 @@ class CacheKeyHelper extends DataExtension
     private function prime_cache_keys()
     {
         // get the classes to get a cache key with from the site tree
-        //$classes = Config::inst()->get($this->class, SiteTree::class);
         $classes = $this->owner->config()->get(SiteTree::class);
 
         $sql = 'SELECT (SELECT MAX(LastEdited) FROM SiteTree_Live WHERE ParentID = '.
@@ -118,6 +119,7 @@ class CacheKeyHelper extends DataExtension
         if ($classes) {
             foreach ($classes as $classname) {
                 $tableName = $this->getTableName($classname);
+
                 $stanza = "(SELECT MAX(LastEdited) from SiteTree_Live "
                     . "where ClassName = '". $classname."')  AS {$tableName}LastEdited , ";
                 $sql .= $stanza;
@@ -169,7 +171,7 @@ class CacheKeyHelper extends DataExtension
         // add a clause to check if any page on the site has changed, a major cache buster
         $sql .= '(SELECT MAX(LastEdited) from SiteTree_Live) as SiteTreeLastEdited;';
 
-        echo "-------\n" . $sql;
+       // echo "-------\n" . $sql;
 
         $records = DB::query($sql)->first();
 
