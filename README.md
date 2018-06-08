@@ -18,7 +18,7 @@
 
 In order to improve the performance of a SilverStripe site it is very useful to use partial caching to cache fragments of a page against a given condition, usually either a LastEdited field or something of periodic time, e.g. caching a copy of a twitter feed on a site and updating it every 5 minutes.  When an item is edited the LastEdited date is updated, or when the period of time elapses the cache is 'busted' and  the partial fragement on the page is updated with the new rendering.  Whilst this technique works it still requires a hit against the database for each partially cached fragement of a page.  So why not get them all in a single query?
 
-#Technique
+# Technique
 When fine tuning a site it is useful to trace SQL activity as follows. Add a trace error_log statement in the query() method of MySQLDatabase.php as follows:
 
     	public function query($sql, $errorLevel = E_USER_ERROR) {
@@ -64,7 +64,7 @@ By default, Page,Member, and Group already have their most recent LastEdited dat
 
 Remember that a /dev/build is required for any configuration changes to be effected.
 
-##Usage in Templates
+## Usage in Templates
 ### Caching Classes of Items
 When creating a cache key, one can now use the following in a template:
 
