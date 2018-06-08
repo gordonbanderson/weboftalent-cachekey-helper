@@ -61,7 +61,20 @@ class CacheKeyHelper extends DataExtension
             $result = $getvars[$paramname];
         }
 
-        return $result;
+        return $paramname . '_' . $result;
+    }
+
+    /**
+     * Provide for a portion of a key that is cached for a certain amount of time.  This is useful
+     * for calling external APIs, where you do not want to hit them every request (for example,
+     * getting the current weather could be delayed to every 15 mins)
+     *
+     * @param $periodInSeconds the length of time the cache key should be valid
+     * @return int
+     */
+    public function PeriodKey($periodInSeconds)
+    {
+        return 'period_' . $periodInSeconds . '_' . (int)(time() / $periodInSeconds);
     }
 
     /*
