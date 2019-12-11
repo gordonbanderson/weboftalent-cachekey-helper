@@ -8,3 +8,19 @@ WebOfTalent\Cache\CacheKeyHelper:
     - SilverStripe\Security\Member
     - SilverStripe\Security\Group
     - SilverStripe\Assets\File
+
+
+---
+Only:
+  environment: 'test'
+---
+WebOfTalent\Cache\CacheKeyHelper:
+  SilverStripe\CMS\Model\SiteTree:
+    - Page
+    - WebOfTalent\Cache\Tests\Model\TestArticle
+  SilverStripe\ORM\DataObject:
+    - SilverStripe\Security\Member
+    - SilverStripe\Security\Group
+    - SilverStripe\Assets\File
+    - WebOfTalent\Cache\Tests\Model\TestLink
+
