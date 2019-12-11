@@ -2,7 +2,10 @@
 [![Build Status](https://travis-ci.org/gordonbanderson/weboftalent-cachekey-helper.svg?branch=master)](https://travis-ci.org/gordonbanderson/weboftalent-cachekey-helper)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/gordonbanderson/weboftalent-cachekey-helper/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/gordonbanderson/weboftalent-cachekey-helper/?branch=master)
 [![Build Status](https://scrutinizer-ci.com/g/gordonbanderson/weboftalent-cachekey-helper/badges/build.png?b=master)](https://scrutinizer-ci.com/g/gordonbanderson/weboftalent-cachekey-helper/build-status/master)
+[![CircleCI](https://circleci.com/gh/gordonbanderson/weboftalent-cachekey-helper.svg?style=svg)](https://circleci.com/gh/gordonbanderson/weboftalent-cachekey-helper)
+
 [![codecov.io](https://codecov.io/github/gordonbanderson/weboftalent-cachekey-helper/coverage.svg?branch=master)](https://codecov.io/github/gordonbanderson/weboftalent-cachekey-helper?branch=master)
+
 
 [![Latest Stable Version](https://poser.pugx.org/weboftalent/cachekeyhelper/version)](https://packagist.org/packages/weboftalent/cachekeyhelper)
 [![Latest Unstable Version](https://poser.pugx.org/weboftalent/cachekeyhelper/v/unstable)](//packagist.org/packages/weboftalent/cachekeyhelper)
@@ -10,16 +13,27 @@
 [![License](https://poser.pugx.org/weboftalent/cachekeyhelper/license)](https://packagist.org/packages/weboftalent/cachekeyhelper)
 [![Monthly Downloads](https://poser.pugx.org/weboftalent/cachekeyhelper/d/monthly)](https://packagist.org/packages/weboftalent/cachekeyhelper)
 [![Daily Downloads](https://poser.pugx.org/weboftalent/cachekeyhelper/d/daily)](https://packagist.org/packages/weboftalent/cachekeyhelper)
+[![composer.lock](https://poser.pugx.org/weboftalent/cachekeyhelper/composerlock)](https://packagist.org/packages/weboftalent/cachekeyhelper)
 
-[![Dependency Status](https://www.versioneye.com/php/weboftalent:cachekeyhelper/badge.svg)](https://www.versioneye.com/php/weboftalent:cachekeyhelper)
-[![Reference Status](https://www.versioneye.com/php/weboftalent:cachekeyhelper/reference_badge.svg?style=flat)](https://www.versioneye.com/php/weboftalent:cachekeyhelper/references)
+[![GitHub Code Size](https://img.shields.io/github/languages/code-size/gordonbanderson/weboftalent-cachekey-helper)](https://github.com/gordonbanderson/weboftalent-cachekey-helper)
+[![GitHub Repo Size](https://img.shields.io/github/repo-size/gordonbanderson/weboftalent-cachekey-helper)](https://github.com/gordonbanderson/weboftalent-cachekey-helper)
+[![GitHub Last Commit](https://img.shields.io/github/last-commit/gordonbanderson/weboftalent-cachekey-helper)](https://github.com/gordonbanderson/weboftalent-cachekey-helper)
+[![GitHub Activity](https://img.shields.io/github/commit-activity/m/gordonbanderson/weboftalent-cachekey-helper)](https://github.com/gordonbanderson/weboftalent-cachekey-helper)
+[![GitHub Issues](https://img.shields.io/github/issues/gordonbanderson/weboftalent-cachekey-helper)](https://github.com/gordonbanderson/weboftalent-cachekey-helper/issues)
 
 ![codecov.io](https://codecov.io/github/gordonbanderson/weboftalent-cachekey-helper/branch.svg?branch=master)
 
-In order to improve the performance of a SilverStripe site it is very useful to use partial caching to cache fragments of a page against a given condition, usually either a LastEdited field or something of periodic time, e.g. caching a copy of a twitter feed on a site and updating it every 5 minutes.  When an item is edited the LastEdited date is updated, or when the period of time elapses the cache is 'busted' and  the partial fragement on the page is updated with the new rendering.  Whilst this technique works it still requires a hit against the database for each partially cached fragement of a page.  So why not get them all in a single query?
+In order to improve the performance of a SilverStripe site it is very useful to use partial caching 
+to cache fragments of a page against a given condition, usually either a LastEdited field or s
+omething of periodic time, e.g. caching a copy of a twitter feed on a site and updating it every
+5 minutes.  When an item is edited the LastEdited date is updated, or when the period of time 
+elapses the cache is 'busted' and  the partial fragement on the page is updated with the new 
+rendering.  Whilst this technique works it still requires a hit against the database for each 
+partially cached fragement of a page.  So why not get them all in a single query?
 
 # Technique
-When fine tuning a site it is useful to trace SQL activity as follows. Add a trace error_log statement in the query() method of MySQLDatabase.php as follows:
+When fine tuning a site it is useful to trace SQL activity as follows. Add a trace error_log 
+statement in the query() method of MySQLDatabase.php as follows:
 
     	public function query($sql, $errorLevel = E_USER_ERROR) {
 			error_log('SQL:'.$sql);
@@ -28,20 +42,23 @@ One can then observe SQL trace using a command similar to the following:
 
 		tail -f /var/log/apache2/yoursite.silverstripe.errors.log | grep SQL
 
-This is useful when trying to identify areas of the site where queries are being generated.  To get a purely numberic value of the number of SQL statements being executed, use a variant of the following:
+This is useful when trying to identify areas of the site where queries are being generated.  To get 
+a purely numberic value of the number of SQL statements being executed, use a variant of the following:
 
 		watch -n 1 'cat /var/log/apache2/yoursite.silverstripe.errors.log | grep SQL | wc -l'
 
-Every time a page is loaded, the number of cumulative SQL statements executed will be shown in a terminal window.  One needs to do a bit of maths, but it's indicative of whether your dealing with 10s of queries, hundreds of queries or indeed thousands of them.
+Every time a page is loaded, the number of cumulative SQL statements executed will be shown in a 
+terminal window.  One needs to do a bit of maths, but it's indicative of whether your dealing with
+ 10s of queries, hundreds of queries or indeed thousands of them.
 
 # Installation
 ## SilverStripe 4
-```php
+```bash
 composer require "weboftalent/cachekeyhelper:^2"
 ```
 
 ## SilverStripe 3
-```php
+```bash
 composer require "weboftalent/cachekeyhelper:^1"
 ```
 
@@ -51,14 +68,16 @@ composer require "weboftalent/cachekeyhelper:^1"
 # Usage
 
 ## Configuration
-For any classes that one wishes to cache on a page, and the configuration is slightly different for Pages (that extend SiteTree) and non SiteTree objects.
-Create a file in _config/ of your site or module, called for example cachekeys.yml 
-By default, Page,Member, and Group already have their most recent LastEdited dates obtained.  If we for example have a class called Article that extends Page, and that Article has Links which extend DataObject then the configuration would look like this:
+For any classes that one wishes to cache on a page, and the configuration is slightly different for 
+Pages (that extend SiteTree) and non SiteTree objects.  Create a file in _config/ of your site or 
+module, called for example `cachekeys.yml`.  By default, Page,Member, and Group already have their 
+most recent LastEdited dates obtained.  If we for example have a class called Article that extends 
+Page, and that Article has Links which extend DataObject then the configuration would look like this:
 
 	CacheKeyHelper:
 	  SilverStripe\CMS\Model\SiteTree:
-	    Article
-	  SilverStripe\CMS\Model\SiteTree:
+	    - Article
+	  SilverStripe\ORM\DataObject:
 	    - WebOfTalent\Link\Link
 	    
 
@@ -70,7 +89,8 @@ When creating a cache key, one can now use the following in a template:
 
 	$CacheKey('someprefix','YourClassName')
 
-Imagine the scenario of a home page where we show the most recent Articles and Links.  The template code for caching would look like this:
+Imagine the scenario of a home page where we show the most recent Articles and Links.  The template 
+code for caching would look like this:
 
 	<% cached ID,LastEdited,$CacheKey('articlehomepageslider', 'Article') %>
 	... render articles here ...
