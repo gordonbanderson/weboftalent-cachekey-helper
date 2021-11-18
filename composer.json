@@ -1,32 +1,52 @@
 {
-	"name": "weboftalent/cachekeyhelper",
-	"description": "Centralise partial queries into a single query to improve performance",
-	"type": "silverstripe-vendormodule",
-	"keywords": ["silverstripe", "caching", "partials", "performance", "weboftalent"],
-	"authors": [{
-		"name": "Gordon Anderson",
-		"email": "gordon.b.anderson@gmail.com",
-		"homepage": "https://github.com/gordonbanderson/weboftalent-cachekey-helper",
-		"role": "Developer"
-	}],
-	"support": {
-		"issues": "https://github.com/gordonbanderson/weboftalent-cachekey-helper/issues"
-	},
-	"require": {
-		"php" : "~5.6|~7.0",
-		"silverstripe/framework": "^4.1"
-	},
-	"require-dev": {
-		"phpunit/phpunit": "^5.7",
-		"squizlabs/php_codesniffer": "^2.3"
-	},
-	"autoload": {
-		"psr-4": {
-			"WebOfTalent\\Cache\\": "src/",
-			"WebOfTalent\\Cache\\Tests\\": "tests/"
-		}
-	},
-	"minimum-stability": "dev",
-	"prefer-stable": true,
-	"license": "MIT"
+    "name": "weboftalent\/cachekeyhelper",
+    "description": "Centralise partial queries into a single query to improve performance",
+    "type": "silverstripe-vendormodule",
+    "keywords": [
+        "silverstripe",
+        "caching",
+        "partials",
+        "performance",
+        "weboftalent"
+    ],
+    "authors": [
+        {
+            "name": "Gordon Anderson",
+            "email": "gordon.b.anderson@gmail.com",
+            "homepage": "https:\/\/github.com\/gordonbanderson\/weboftalent-cachekey-helper",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "issues": "https:\/\/github.com\/gordonbanderson\/weboftalent-cachekey-helper\/issues"
+    },
+    "require": {
+        "php": "^7.1",
+        "silverstripe\/framework": "^4",
+        "slevomat/coding-standard": "^7.0"
+    },
+    "require-dev": {
+        "phpunit\/phpunit": "^5.7",
+        "php-parallel-lint\/php-parallel-lint": "^1.3",
+        "php-parallel-lint\/php-console-highlighter": "^0.5.0",
+        "phpstan\/phpstan-strict-rules": "^1.1",
+        "phpstan\/extension-installer": "^1.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "WebOfTalent\\Cache\\": "src\/",
+            "WebOfTalent\\Cache\\Tests\\": "tests\/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "license": "MIT",
+    "scripts": {
+		"checkCode": "composer lint && composer checkcs && composer phpstan",
+		"checkcs": "vendor/bin/phpcs --standard=ruleset.xml --extensions=php --tab-width=4 -sp src tests",
+		"fixcs": "vendor/bin/phpcbf --standard=ruleset.xml --extensions=php --tab-width=4 -sp src tests",
+		"lint": "vendor/bin/parallel-lint src/ tests/",
+		"phpstan": "vendor/bin/phpstan analyse --memory-limit=2G --level=8 -c tests/phpstan.neon src/",
+		"test": "vendor/bin/phpunit tests"
+	}
 }

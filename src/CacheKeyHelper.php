@@ -1,33 +1,34 @@
 <?php
+
+declare(strict_types = 1);
+
 namespace WebOfTalent\Cache;
 
-use SilverStripe\Blog\Model\BlogPost;
-use SilverStripe\Control\Controller;
-use SilverStripe\Core\ClassInfo;
-use SilverStripe\Core\Config\Config;
 use SilverStripe\CMS\Model\SiteTree;
-use SilverStripe\ORM\DataObject;
-use SilverStripe\Security\Member;
-use SilverStripe\ORM\DB;
+use SilverStripe\Control\Controller;
+use SilverStripe\Core\Config\Config;
 use SilverStripe\ORM\DataExtension;
+use SilverStripe\ORM\DataObject;
+use SilverStripe\ORM\DB;
 
+// @phpcs:disable PSR1.Methods.CamelCapsMethodName.NotCamelCaps
+// @phpcs:disable SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingTraversableTypeHintSpecification
 class CacheKeyHelper extends DataExtension
 {
-    /*
-    An associative array of the form <Name>LastEdited -> some calculated key value
-    */
-    private static $_last_edited_values = array();
+    /** @var array<string,string> <Name>LastEdited -> some calculated key value */
+    private static $last_edited_values = array();
 
-    /*
-    Flag to ensure that the query is run only once
-    */
+    /** @var bool Flag to ensure that the query is run only once */
     private static $cachekeysinitialised = false;
 
-    /*
-    Obtain a part of the cache key fragment based on a parameter name
-    In a template this would look like <tt>$CacheParamKey('start')</tt>
+    /**
+    * Obtain a part of the cache key fragment based on a parameter name
+    * In a template this would look like <tt>$CacheParamKey('start')</tt>
+
+    * @param string $param the parameter being used to cache
+    * @return string a unique string suitable as a cache key
     */
-    public function CacheParamKey($param)
+    public function CacheParamKey(string $param): string
     {
         if (!self::$cachekeysinitialised) {
             $this->prime_cache_keys();
@@ -37,65 +38,73 @@ class CacheKeyHelper extends DataExtension
         // check URL parameters
         $key = 'PARAM_'.$param;
         $value = null;
-        if (isset(self::$_last_edited_values[$key])) {
-            $value = self::$_last_edited_values[$key];
+        if (isset(self::$last_edited_values[$key])) {
+            $value = self::$last_edited_values[$key];
         };
 
         // if still null check parameters from routing configuration
-        if ($value == null) {
-            $request = Controller::curr()->request;
+        if ($value === null) {
+            $request = Controller::curr()->getRequest();
             $value = $request->param($param);
         }
 
         return '_'.$param.'_'.$value;
     }
 
-    /*
-        Append a url parameter to the cache key.  This is useful for example when using pagination
-    */
-    public function CacheKeyGetParam($paramname)
-    {
-        $getvars = Controller::curr()->request;
-        $result = '';
-        if (isset($getvars[$paramname])) {
-            $result = $getvars[$paramname];
-        }
-
-        return $paramname . '_' . $result;
-    }
 
     /**
-     * Provide for a portion of a key that is cached for a certain amount of time.  This is useful
+     * Append a url parameter to the cache key. This is useful for example when using pagination
+     */
+    public function CacheKeyGetParam(string $parameterName): string
+    {
+        $getvars = Controller::curr()->getRequest();
+        $result = '';
+        if (isset($getvars[$parameterName])) {
+            $result = $getvars[$parameterName];
+        }
+
+        return $parameterName . '_' . $result;
+    }
+
+
+    /**
+     * Provide for a portion of a key that is cached for a certain amount of time. This is useful
      * for calling external APIs, where you do not want to hit them every request (for example,
      * getting the current weather could be delayed to every 15 mins)
      *
-     * @param $periodInSeconds the length of time the cache key should be valid
-     * @return int
+     * @param int $periodInSeconds the length of time the cache key should be valid
      */
-    public function PeriodKey($periodInSeconds)
+    public function PeriodKey(int $periodInSeconds): string
     {
-        return 'period_' . $periodInSeconds . '_' . (int)(time() / $periodInSeconds);
+        return 'period_' . $periodInSeconds . '_' . (int)(\time() / $periodInSeconds);
     }
 
-    /*
-    Old name for this method, as request params now included
-    */
-    public function CacheKey($prefix, $classname)
+
+    /**
+    * Old name for this method, as request params now included
+     *
+     * @param string $prefix - an arbitrary prefix to differentiate from different areas of a page of pages,
+    e.g. folderofarticles,homepagearticles
+    * @param string $classname - the classname that we wish to find the most recent last edited value of
+     */
+    public function CacheKey(string $prefix, string $classname): string
     {
         return $this->CacheDataKey($prefix, $classname);
     }
 
-    /*
+
+    /**
     Obtain a cache for a given class with a given prefix, to be used in templates for partial
-    caching.  It is designed to ensure that the query for caching is only called once and that all
-    caching values are calculated at this time.  They are subsequently stored in a
+    caching. It is designed to ensure that the query for caching is only called once and that all
+    caching values are calculated at this time. They are subsequently stored in a
     local static variable for use in other parts of the page being rendered.
 
-    @param $prefix - an arbitrary prefix to differentiate from different areas of a page of pages,
+    @param string $prefix - an arbitrary prefix to differentiate from different areas of a page of pages,
     e.g. folderofarticles,homepagearticles
-    @param $classname - the classname that we wish to find the most recent last edited value of
+    @param string $classname - the classname that we wish to find the most recent last edited value of
+     * @return string the key for the possibly cached data
     */
-    public function CacheDataKey($prefix, $classname)
+    public function CacheDataKey(string $prefix, string $classname): string
     {
         // only initialise the cache keys once
         if (!self::$cachekeysinitialised) {
@@ -103,13 +112,13 @@ class CacheKeyHelper extends DataExtension
             self::$cachekeysinitialised = true;
         }
 
-        return $prefix.'_'.self::$_last_edited_values[$classname.'LastEdited'];
+        return $prefix.'_'.self::$last_edited_values[$classname.'LastEdited'];
     }
 
     /*
-    Using configuration values for classes required to be cache keys from both SiteTree andDataObject, form a large single query to get last edited
-    values for each of these individual classes.  Also for good measure the following are added
-    utomatically:
+    Using configuration values for classes required to be cache keys from both SiteTree andDataObject,
+     form a large single query to get last edited values for each of these individual classes.  Also
+    for good measure the following are added  automatically:
     - CurrentPageLastEdited: The last edited value of the current page being viewed
     - ChildPageLastEdited: The last childPage object to be edited, useful when rendering a folder
     - SiblingPageLastEdited: Most recent last edited value of a page that is a sibling to the
@@ -121,10 +130,11 @@ class CacheKeyHelper extends DataExtension
     - SiteConfigLastEdited: Last edited value of the site configuration
     - SiteTreeLastEdited: Most recent item edited on the entire site
     */
-    private function prime_cache_keys()
+    private function prime_cache_keys(): void
     {
         // get the classes to get a cache key with from the site tree
-        $classes = $this->owner->config()->get(SiteTree::class);
+        // @phpstan-ignore-next-line
+        $classes = $this->getOwner()->config()->get(SiteTree::class);
 
         $sql = 'SELECT (SELECT MAX(LastEdited) FROM SiteTree_Live WHERE ParentID = '.
             $this->owner->ID.') AS ChildPageLastEdited,';
@@ -140,7 +150,8 @@ class CacheKeyHelper extends DataExtension
         }
 
         // get the classes to get a cache key with that are not in the site tree
-        $classes = $this->owner->config()->get(DataObject::class);
+        // @phpstan-ignore-next-line
+        $classes = $this->getOwner()->config()->get(DataObject::class);
 
         if ($classes) {
             foreach ($classes as $classname) {
@@ -174,12 +185,14 @@ class CacheKeyHelper extends DataExtension
         $sql .= "(SELECT LastEdited from `SiteConfig`) AS SiteConfigLastEdited, ";
 
         // the current actual page
-        $sql .= "(SELECT LastEdited from SiteTree_Live where ID='".$this->owner->ID.
+        // @phpstan-ignore-next-line
+        $sql .= "(SELECT LastEdited from SiteTree_Live where ID='".$this->getOwner()->ID.
                 "') as CurrentPageLastEdited,";
 
         // siblings, needed for side menu
         $sql .= "(SELECT MAX(LastEdited) from SiteTree_Live where ParentID='".
-            $this->owner->ParentID."') as SiblingPageLastEdited,";
+            // @phpstan-ignore-next-line
+            $this->getOwner()->ParentID."') as SiblingPageLastEdited,";
 
         // add a clause to check if any page on the site has changed, a major cache buster
         $sql .= '(SELECT MAX(LastEdited) from SiteTree_Live) as SiteTreeLastEdited;';
@@ -189,20 +202,17 @@ class CacheKeyHelper extends DataExtension
 
 
         // now append the request params, stored as PARAM_<parameter name> -> parameter value
-        foreach (Controller::curr()->request->requestVars() as $k => $v) {
+        foreach (Controller::curr()->getRequest()->requestVars() as $k => $v) {
             $records['PARAM_'.$k] = $v;
         }
 
-        self::$_last_edited_values = $records;
+        self::$last_edited_values = $records;
     }
 
-    /**
-     * @param $classname
-     * @return array
-     */
-    private function getTableName($classname)
+
+    /** @return string the table name associated with the classname above */
+    private function getTableName(string $classname): string
     {
-        $tableName = Config::inst()->get($classname, 'table_name');
-        return $tableName;
+        return Config::inst()->get($classname, 'table_name');
     }
 }

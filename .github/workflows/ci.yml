@@ -1,0 +1,56 @@
+name: Module CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  # 7.4 is the default
+  UNIT-TESTS-74:
+    uses: gordonbanderson/actions/.github/workflows/silverstripemodule.yml@main
+    with:
+      test-config-flag: UNIT_TESTING_FTS_CONFIG_ENABLED
+
+  UNIT-TESTS-74-POSTGRESQL:
+    uses: gordonbanderson/actions/.github/workflows/silverstripemodule.yml@main
+    with:
+      test-config-flag: UNIT_TESTING_FTS_CONFIG_ENABLED
+      database: postgresql
+
+  UNIT-TESTS-COVERAGE-74:
+    uses: gordonbanderson/actions/.github/workflows/silverstripemodule.yml@main
+    with:
+      run-php-unit-coverage: true
+      # Only wish to phpdbg with coverage enabled, no need to run tests without also
+      run-php-unit: false
+      test-config-flag: UNIT_TESTING_FTS_CONFIG_ENABLED
+
+  UNIT-TESTS-73:
+    uses: gordonbanderson/actions/.github/workflows/silverstripemodule.yml@main
+    with:
+      php-version: 7.3
+      test-config-flag: UNIT_TESTING_FTS_CONFIG_ENABLED
+
+  UNIT-TESTS-SS47:
+    uses: gordonbanderson/actions/.github/workflows/silverstripemodule.yml@main
+    with:
+      silverstripe-version: 4.7
+      test-config-flag: UNIT_TESTING_FTS_CONFIG_ENABLED
+
+  UNIT-TESTS-SS48:
+    uses: gordonbanderson/actions/.github/workflows/silverstripemodule.yml@main
+    with:
+      silverstripe-version: 4.8
+      test-config-flag: UNIT_TESTING_FTS_CONFIG_ENABLED
+
+  LINTING:
+    uses: gordonbanderson/actions/.github/workflows/silverstripemodule.yml@main
+    with:
+      run-php-lint: true
+      run-phpstan: true
+      run-todo: true
+      run-php-unit: false
+      run-duplicate-code-check: true
+
