@@ -2,7 +2,7 @@ name: Module CI
 
 on:
   push:
-    branches: [ main, GITHUB_ACTIONS_CI ]
+    branches: [ main ]
   pull_request:
     branches: [ main ]
 
