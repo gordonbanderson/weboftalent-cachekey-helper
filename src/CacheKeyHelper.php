@@ -133,6 +133,7 @@ class CacheKeyHelper extends DataExtension
     private function prime_cache_keys(): void
     {
         // get the classes to get a cache key with from the site tree
+        // @phpstan-ignore-next-line
         $classes = $this->getOwner()->config()->get(SiteTree::class);
 
         $sql = 'SELECT (SELECT MAX(LastEdited) FROM SiteTree_Live WHERE ParentID = '.
@@ -149,6 +150,7 @@ class CacheKeyHelper extends DataExtension
         }
 
         // get the classes to get a cache key with that are not in the site tree
+        // @phpstan-ignore-next-line
         $classes = $this->getOwner()->config()->get(DataObject::class);
 
         if ($classes) {
@@ -183,11 +185,13 @@ class CacheKeyHelper extends DataExtension
         $sql .= "(SELECT LastEdited from `SiteConfig`) AS SiteConfigLastEdited, ";
 
         // the current actual page
+        // @phpstan-ignore-next-line
         $sql .= "(SELECT LastEdited from SiteTree_Live where ID='".$this->getOwner()->ID.
                 "') as CurrentPageLastEdited,";
 
         // siblings, needed for side menu
         $sql .= "(SELECT MAX(LastEdited) from SiteTree_Live where ParentID='".
+            // @phpstan-ignore-next-line
             $this->getOwner()->ParentID."') as SiblingPageLastEdited,";
 
         // add a clause to check if any page on the site has changed, a major cache buster
