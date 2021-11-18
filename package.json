@@ -1,0 +1,26 @@
+{
+  "name": "www",
+  "version": "1.0.0",
+  "description": "[![Build Status](https://travis-ci.org/gordonbanderson/freetextsearch.svg?branch=CODE_COVERAGE)](https://travis-ci.org/gordonbanderson/freetextsearch) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/gordonbanderson/freetextsearch/badges/quality-score.png?b=CODE_COVERAGE)](https://scrutinizer-ci.com/g/gordonbanderson/freetextsearch/?branch=CODE_COVERAGE) [![codecov.io](https://codecov.io/github/gordonbanderson/freetextsearch/coverage.svg?branch=CODE_COVERAGE)](https://codecov.io/github/gordonbanderson/freetextsearch?branch=CODE_COVERAGE)",
+  "main": "webpack.config.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gordonbanderson/freetextsearch.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gordonbanderson/freetextsearch/issues"
+  },
+  "homepage": "https://github.com/gordonbanderson/freetextsearch#readme",
+  "dependencies": {
+    "jscpd": "^3.4.2",
+    "leasot": "^12.0.0"
+  }
+}
