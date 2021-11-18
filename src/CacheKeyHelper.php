@@ -15,24 +15,20 @@ use SilverStripe\ORM\DB;
 // @phpcs:disable SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingTraversableTypeHintSpecification
 class CacheKeyHelper extends DataExtension
 {
-    /*
-    An associative array of the form <Name>LastEdited -> some calculated key value
-    */
+    /** @var array<string,string> <Name>LastEdited -> some calculated key value */
     private static $last_edited_values = array();
 
-    /*
-    Flag to ensure that the query is run only once
-    */
+    /** @var bool Flag to ensure that the query is run only once */
     private static $cachekeysinitialised = false;
 
     /**
     * Obtain a part of the cache key fragment based on a parameter name
     * In a template this would look like <tt>$CacheParamKey('start')</tt>
 
-    * @param bool|float|int|string $param the parameter being used to cache
+    * @param string $param the parameter being used to cache
     * @return string a unique string suitable as a cache key
     */
-    public function CacheParamKey($param): string
+    public function CacheParamKey(string $param): string
     {
         if (!self::$cachekeysinitialised) {
             $this->prime_cache_keys();
@@ -48,7 +44,7 @@ class CacheKeyHelper extends DataExtension
 
         // if still null check parameters from routing configuration
         if ($value === null) {
-            $request = Controller::curr()->request;
+            $request = Controller::curr()->getRequest();
             $value = $request->param($param);
         }
 
@@ -61,7 +57,7 @@ class CacheKeyHelper extends DataExtension
      */
     public function CacheKeyGetParam(string $parameterName): string
     {
-        $getvars = Controller::curr()->request;
+        $getvars = Controller::curr()->getRequest();
         $result = '';
         if (isset($getvars[$parameterName])) {
             $result = $getvars[$parameterName];
@@ -137,7 +133,7 @@ class CacheKeyHelper extends DataExtension
     private function prime_cache_keys(): void
     {
         // get the classes to get a cache key with from the site tree
-        $classes = $this->owner->config()->get(SiteTree::class);
+        $classes = $this->getOwner()->config()->get(SiteTree::class);
 
         $sql = 'SELECT (SELECT MAX(LastEdited) FROM SiteTree_Live WHERE ParentID = '.
             $this->owner->ID.') AS ChildPageLastEdited,';
@@ -153,7 +149,7 @@ class CacheKeyHelper extends DataExtension
         }
 
         // get the classes to get a cache key with that are not in the site tree
-        $classes = $this->owner->config()->get(DataObject::class);
+        $classes = $this->getOwner()->config()->get(DataObject::class);
 
         if ($classes) {
             foreach ($classes as $classname) {
@@ -187,12 +183,12 @@ class CacheKeyHelper extends DataExtension
         $sql .= "(SELECT LastEdited from `SiteConfig`) AS SiteConfigLastEdited, ";
 
         // the current actual page
-        $sql .= "(SELECT LastEdited from SiteTree_Live where ID='".$this->owner->ID.
+        $sql .= "(SELECT LastEdited from SiteTree_Live where ID='".$this->getOwner()->ID.
                 "') as CurrentPageLastEdited,";
 
         // siblings, needed for side menu
         $sql .= "(SELECT MAX(LastEdited) from SiteTree_Live where ParentID='".
-            $this->owner->ParentID."') as SiblingPageLastEdited,";
+            $this->getOwner()->ParentID."') as SiblingPageLastEdited,";
 
         // add a clause to check if any page on the site has changed, a major cache buster
         $sql .= '(SELECT MAX(LastEdited) from SiteTree_Live) as SiteTreeLastEdited;';
@@ -202,7 +198,7 @@ class CacheKeyHelper extends DataExtension
 
 
         // now append the request params, stored as PARAM_<parameter name> -> parameter value
-        foreach (Controller::curr()->request->requestVars() as $k => $v) {
+        foreach (Controller::curr()->getRequest()->requestVars() as $k => $v) {
             $records['PARAM_'.$k] = $v;
         }
 
@@ -211,7 +207,7 @@ class CacheKeyHelper extends DataExtension
 
 
     /** @return string the table name associated with the classname above */
-    private function getTableName(string $classname): array
+    private function getTableName(string $classname): string
     {
         return Config::inst()->get($classname, 'table_name');
     }
