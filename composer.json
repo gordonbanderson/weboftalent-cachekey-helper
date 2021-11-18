@@ -22,11 +22,11 @@
     },
     "require": {
         "php": "^7.1",
-        "silverstripe\/framework": "^4"
+        "silverstripe\/framework": "^4",
+        "slevomat/coding-standard": "^7.0"
     },
     "require-dev": {
         "phpunit\/phpunit": "^5.7",
-        "squizlabs\/php_codesniffer": "^2.3",
         "php-parallel-lint\/php-parallel-lint": "^1.3",
         "php-parallel-lint\/php-console-highlighter": "^0.5.0",
         "phpstan\/phpstan-strict-rules": "^1.1",
@@ -42,8 +42,11 @@
     "prefer-stable": true,
     "license": "MIT",
     "scripts": {
-        "checkCode": "composer lint && composer phpstan",
-        "lint": "vendor\/bin\/parallel-lint src\/ tests\/",
-        "phpstan": "vendor\/bin\/phpstan analyse --level=8 -c tests\/phpstan.neon src\/"
-    }
+		"checkCode": "composer lint && composer checkcs && composer phpstan",
+		"checkcs": "vendor/bin/phpcs --standard=ruleset.xml --extensions=php --tab-width=4 -sp src tests",
+		"fixcs": "vendor/bin/phpcbf --standard=ruleset.xml --extensions=php --tab-width=4 -sp src tests",
+		"lint": "vendor/bin/parallel-lint src/ tests/",
+		"phpstan": "vendor/bin/phpstan analyse --memory-limit=2G --level=8 -c tests/phpstan.neon src/",
+		"test": "vendor/bin/phpunit tests"
+	}
 }
