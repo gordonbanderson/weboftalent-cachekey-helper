@@ -1,31 +1,38 @@
 <?php
+
+declare(strict_types = 1);
+
 namespace WebOfTalent\Cache\Tests;
 
 use SilverStripe\Dev\SapphireTest;
 
 class CacheKeyHelperTest extends SapphireTest
 {
-    public function testCacheParamKey()
+    public function testCacheParamKey(): void
     {
         $this->markTestSkipped('TODO');
     }
 
-    public function testCacheKeyGetParam()
+
+    public function testCacheKeyGetParam(): void
     {
         $this->markTestSkipped('TODO');
     }
 
-    public function testCacheKey()
+
+    public function testCacheKey(): void
     {
         $this->markTestSkipped('TODO');
     }
 
-    public function testCacheDataKey()
+
+    public function testCacheDataKey(): void
     {
         $this->markTestSkipped('TODO');
     }
 
-    public function testPrime_cache_keys()
+
+    public function testPrime_cache_keys(): void
     {
         $this->markTestSkipped('TODO');
     }

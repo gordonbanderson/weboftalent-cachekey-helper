@@ -1,15 +1,15 @@
 <?php
+
+declare(strict_types = 1);
+
 namespace WebOfTalent\Cache;
 
-use SilverStripe\Blog\Model\BlogPost;
-use SilverStripe\Control\Controller;
-use SilverStripe\Core\ClassInfo;
-use SilverStripe\Core\Config\Config;
 use SilverStripe\CMS\Model\SiteTree;
-use SilverStripe\ORM\DataObject;
-use SilverStripe\Security\Member;
-use SilverStripe\ORM\DB;
+use SilverStripe\Control\Controller;
+use SilverStripe\Core\Config\Config;
 use SilverStripe\ORM\DataExtension;
+use SilverStripe\ORM\DataObject;
+use SilverStripe\ORM\DB;
 
 class CacheKeyHelper extends DataExtension
 {
@@ -42,7 +42,7 @@ class CacheKeyHelper extends DataExtension
         };
 
         // if still null check parameters from routing configuration
-        if ($value == null) {
+        if ($value === null) {
             $request = Controller::curr()->request;
             $value = $request->param($param);
         }
@@ -64,17 +64,17 @@ class CacheKeyHelper extends DataExtension
         return $paramname . '_' . $result;
     }
 
+
     /**
-     * Provide for a portion of a key that is cached for a certain amount of time.  This is useful
+     * Provide for a portion of a key that is cached for a certain amount of time. This is useful
      * for calling external APIs, where you do not want to hit them every request (for example,
      * getting the current weather could be delayed to every 15 mins)
      *
      * @param $periodInSeconds the length of time the cache key should be valid
-     * @return int
      */
-    public function PeriodKey($periodInSeconds)
+    public function PeriodKey($periodInSeconds): int
     {
-        return 'period_' . $periodInSeconds . '_' . (int)(time() / $periodInSeconds);
+        return 'period_' . $periodInSeconds . '_' . (int)(\time() / $periodInSeconds);
     }
 
     /*
@@ -121,7 +121,7 @@ class CacheKeyHelper extends DataExtension
     - SiteConfigLastEdited: Last edited value of the site configuration
     - SiteTreeLastEdited: Most recent item edited on the entire site
     */
-    private function prime_cache_keys()
+    private function prime_cache_keys(): void
     {
         // get the classes to get a cache key with from the site tree
         $classes = $this->owner->config()->get(SiteTree::class);
@@ -196,13 +196,13 @@ class CacheKeyHelper extends DataExtension
         self::$_last_edited_values = $records;
     }
 
+
     /**
      * @param $classname
      * @return array
      */
-    private function getTableName($classname)
+    private function getTableName($classname): array
     {
-        $tableName = Config::inst()->get($classname, 'table_name');
-        return $tableName;
+        return Config::inst()->get($classname, 'table_name');
     }
 }
