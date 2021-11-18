@@ -32,7 +32,7 @@ class CacheKeyHelperTest extends SapphireTest
     }
 
 
-    public function testPrime_cache_keys(): void
+    public function testPrimeCacheKeys(): void
     {
         $this->markTestSkipped('TODO');
     }
