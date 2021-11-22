@@ -2,7 +2,7 @@ name: Module CI
 
 on:
   push:
-    branches: [ main, OTHER_FIXES ]
+    branches: [ main, WRITE_UNIT_TESTS ]
   pull_request:
     branches: [ main ]
 
