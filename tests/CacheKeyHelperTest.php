@@ -4,13 +4,18 @@ declare(strict_types = 1);
 
 namespace WebOfTalent\Cache\Tests;
 
+use SilverStripe\Dev\FunctionalTest;
 use SilverStripe\Dev\SapphireTest;
 
-class CacheKeyHelperTest extends SapphireTest
+class CacheKeyHelperTest extends FunctionalTest
 {
     public function testCacheParamKey(): void
     {
-        $this->markTestSkipped('TODO');
+        $page = $this->get('home/');
+
+        // Home page should load..
+        $this->assertEquals(200, $page->getStatusCode());
+
     }
 
 
