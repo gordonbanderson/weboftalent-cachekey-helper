@@ -13,7 +13,7 @@ class CacheKeyHelperTest extends FunctionalTest
     {
         $homePage = SiteTree::get_by_id(1);
         $response = $this->get('home/?x=40&y=52');
-        error_log(print_r($response, true));
+        \error_log(\print_r($response, true));
 
         // Home page should load..
         $this->assertEquals(200, $response->getStatusCode());
@@ -29,6 +29,20 @@ class CacheKeyHelperTest extends FunctionalTest
     public function testCacheKeyGetParam(): void
     {
         $this->markTestSkipped('TODO');
+    }
+
+
+    public function testPeriodKey(): void
+    {
+        $homePage = SiteTree::get_by_id(1);
+        # 15 mins
+        $periodKey = $homePage->PeriodKey(900);
+        $this->assertStringStartsWith('period_900_', $periodKey);
+        $splits = \explode('_', $periodKey);
+        $thePeriod = \intval($splits[2]);
+
+        // this is potentially fragile if the test is run at exactly the boundary of a 15 minute period
+        $this->assertGreaterThanOrEqual($thePeriod*900, \time());
     }
 
 
