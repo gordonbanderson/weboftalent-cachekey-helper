@@ -21,6 +21,20 @@ class CacheKeyHelper extends DataExtension
     /** @var bool Flag to ensure that the query is run only once */
     private static $cachekeysinitialised = false;
 
+    /** @var RequestProvider */
+    private $requestProvider;
+
+    /**
+     * @param RequestProvider $requestProvider
+     */
+    public function __construct($requestProvider = null)
+    {
+        $this->requestProvider = $requestProvider;
+        if (is_null($requestProvider)) {
+            $this->requestProvider = new CurrentControllerRequestProvider();
+        }
+    }
+
     /**
     * Obtain a part of the cache key fragment based on a parameter name
     * In a template this would look like <tt>$CacheParamKey('start')</tt>
@@ -44,7 +58,7 @@ class CacheKeyHelper extends DataExtension
 
         // if still null check parameters from routing configuration
         if ($value === null) {
-            $request = Controller::curr()->getRequest();
+            $request = $this->requestProvider->getRequest();
             $value = $request->param($param);
         }
 
@@ -57,7 +71,7 @@ class CacheKeyHelper extends DataExtension
      */
     public function CacheKeyGetParam(string $parameterName): string
     {
-        $getvars = Controller::curr()->getRequest();
+        $getvars = $this->requestProvider->getRequest()->getVars();
         $result = '';
         if (isset($getvars[$parameterName])) {
             $result = $getvars[$parameterName];
@@ -202,7 +216,7 @@ class CacheKeyHelper extends DataExtension
 
 
         // now append the request params, stored as PARAM_<parameter name> -> parameter value
-        foreach (Controller::curr()->getRequest()->requestVars() as $k => $v) {
+        foreach ($this->requestProvider->getRequest()->requestVars() as $k => $v) {
             $records['PARAM_'.$k] = $v;
         }
 
