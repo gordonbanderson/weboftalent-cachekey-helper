@@ -4,8 +4,15 @@ declare(strict_types = 1);
 
 namespace WebOfTalent\Cache\Tests;
 
+use http\Env\Request;
+use PHPStan\BetterReflection\Reflection\ReflectionProperty;
 use SilverStripe\CMS\Model\SiteTree;
+use SilverStripe\Control\Controller;
+use SilverStripe\Control\HTTPRequest;
+use SilverStripe\Control\RequestHandler;
+use SilverStripe\Control\Session;
 use SilverStripe\Dev\FunctionalTest;
+use SilverStripe\Security\Security;
 
 class CacheKeyHelperTest extends FunctionalTest
 {
@@ -13,7 +20,7 @@ class CacheKeyHelperTest extends FunctionalTest
     {
         $homePage = SiteTree::get_by_id(1);
         $response = $this->get('home/?x=40&y=52');
-        \error_log(\print_r($response, true));
+
 
         // Home page should load..
         $this->assertEquals(200, $response->getStatusCode());
@@ -28,7 +35,27 @@ class CacheKeyHelperTest extends FunctionalTest
 
     public function testCacheKeyGetParam(): void
     {
-        $this->markTestSkipped('TODO');
+//        $homePage = SiteTree::get_by_id(1);
+//        $response = $this->get('home/?x=40&y=52');
+
+
+        $request = new HTTPRequest('GET', '/?x=40&y=52');
+
+        $request->setSession(new Session([]));
+        $security = new Security();
+        $security->setRequest($request);
+        $reflection = new \ReflectionClass($security);
+        $method = $reflection->getMethod('getResponseController');
+        $method->setAccessible(true);
+        $result = $method->invoke($security, 'Page');
+
+        // Ensure page shares the same controller as security
+        $this->assertInstanceOf(\PageController::class, $result);
+        $this->assertEquals($request, $result->getRequest());
+
+        $c = Controller::curr();
+        error_log(print_r($c->getRequest()->requestVars(), true));
+
     }
 
 
