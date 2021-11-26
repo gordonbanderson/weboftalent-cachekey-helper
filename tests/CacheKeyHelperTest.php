@@ -9,29 +9,36 @@ use SilverStripe\Dev\FunctionalTest;
 
 class CacheKeyHelperTest extends FunctionalTest
 {
-    public function testCacheParamKey(): void
+    public function testCacheKeyParamVar(): void
     {
         $homePage = SiteTree::get_by_id(1);
 
-        // @todo Is this correct
-        $this->assertEquals('_page_2', $homePage->CacheParamKey('page'));
-        $this->assertEquals('_q_Aristotle', $homePage->CacheParamKey('q'));
+        // These are valid GET variables, but params come from the routing
+        $this->assertEquals('', $homePage->CacheKeyParamVar('page'));
+        $this->assertEquals('', $homePage->CacheKeyParamVar('q'));
 
-        // @todo Is this correct behaviour?
-        $this->assertEquals('_z_', $homePage->CacheParamKey('z'));
+        // this does not exist as a get variable, or a parameter
+        $this->assertEquals('', $homePage->CacheKeyParamVar('doesnotexist'));
+
+
+//        // @todo Is this correct behaviour?
+//        $this->assertEquals('_z_', $homePage->CacheParamKey('z'));
+//
+//        //
+//        $this->assertEquals('_z_', $homePage->CacheParamKey('TopTwoLevelsLastEdited'));
     }
 
 
     /**
      * If a URL has likes of ?page=2 create a param cache key of the form page_2
      */
-    public function testCacheKeyGetParam(): void
+    public function testCacheKeyGetVar(): void
     {
         $homePage = SiteTree::get_by_id(1);
 
-        $this->assertEquals('page_2', $homePage->CacheKeyGetParam('page'));
-        $this->assertEquals('q_Aristotle', $homePage->CacheKeyGetParam('q'));
-        $this->assertEquals('', $homePage->CacheKeyGetParam('doesnotexist'));
+        $this->assertEquals('_page_2', $homePage->CacheKeyGetVar('page'));
+         $this->assertEquals('_q_Aristotle', $homePage->CacheKeyGetVar('q'));
+        $this->assertEquals('', $homePage->CacheKeyGetVar('doesnotexist'));
     }
 
 
@@ -49,9 +56,11 @@ class CacheKeyHelperTest extends FunctionalTest
     }
 
 
-    public function testCacheKey(): void
+    public function testCacheKeyLastEdited(): void
     {
-        $this->markTestSkipped('TODO');
+        $homePage = SiteTree::get_by_id(1);
+        $this->assertEquals('wibble', $homePage->CacheKeyLastEdited('testing', 'CurrentPage'));
+        
     }
 
 
