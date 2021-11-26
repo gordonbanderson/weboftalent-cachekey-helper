@@ -22,14 +22,20 @@ class CacheKeyHelperTest extends FunctionalTest
     {
         $homePage = SiteTree::get_by_id(1);
 
-        $this->assertEquals('_page_', $homePage->CacheParamKey('page'));
-        $this->assertEquals('_q_', $homePage->CacheParamKey('q'));
+        // @todo Is this correct
+        $this->assertEquals('_page_2', $homePage->CacheParamKey('page'));
+        $this->assertEquals('_q_Aristotle', $homePage->CacheParamKey('q'));
 
-        // this will still work even if not present in the URL
+        // @todo Is this correct behaviour?
         $this->assertEquals('_z_', $homePage->CacheParamKey('z'));
     }
 
 
+    /**
+     * If a URL has likes of ?page=2 create a param cache key of the form page_2
+     *
+     * @return void
+     */
     public function testCacheKeyGetParam(): void
     {
         $homePage = SiteTree::get_by_id(1);

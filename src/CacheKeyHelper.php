@@ -28,11 +28,6 @@ class CacheKeyHelper extends DataExtension
     public function __construct()
     {
         parent::__construct();
-//        $clazzname = Config::inst()->get(CacheKeyHelper::class, 'provider');
-//        #$clazzname = $this->getOwner()->config()->get('provider');
-//        error_log('+++++++++ CN = ' . $clazzname);
-//         = new $clazzname;
-
         $this->requestProvider = Injector::inst()->get('WebOfTalent\Cache\CurrentControllerRequestProvider');
     }
 
@@ -45,10 +40,7 @@ class CacheKeyHelper extends DataExtension
     */
     public function CacheParamKey(string $param): string
     {
-        if (!self::$cachekeysinitialised) {
-            $this->prime_cache_keys();
-            self::$cachekeysinitialised = true;
-        }
+        $this->prime_cache_keys();
 
         // check URL parameters
         $key = 'PARAM_'.$param;
@@ -101,11 +93,12 @@ class CacheKeyHelper extends DataExtension
     * Old name for this method, as request params now included
      *
      * @param string $prefix - an arbitrary prefix to differentiate from different areas of a page of pages,
-    e.g. folderofarticles,homepagearticles
-    * @param string $classname - the classname that we wish to find the most recent last edited value of
+       e.g. folderofarticles,homepagearticles
+     * @param string $classname - the classname that we wish to find the most recent last edited value of
      */
     public function CacheKey(string $prefix, string $classname): string
     {
+        $this->prime_cache_keys();
         return $this->CacheDataKey($prefix, $classname);
     }
 
@@ -123,12 +116,7 @@ class CacheKeyHelper extends DataExtension
     */
     public function CacheDataKey(string $prefix, string $classname): string
     {
-        // only initialise the cache keys once
-        if (!self::$cachekeysinitialised) {
-            $this->prime_cache_keys();
-            self::$cachekeysinitialised = true;
-        }
-
+        $this->prime_cache_keys();
         return $prefix.'_'.self::$last_edited_values[$classname.'LastEdited'];
     }
 
@@ -149,6 +137,10 @@ class CacheKeyHelper extends DataExtension
     */
     private function prime_cache_keys(): void
     {
+        if (self::$cachekeysinitialised) {
+            return;
+        }
+
         // get the classes to get a cache key with from the site tree
         // @phpstan-ignore-next-line
         $classes = $this->getOwner()->config()->get(SiteTree::class);
@@ -223,8 +215,11 @@ class CacheKeyHelper extends DataExtension
         foreach ($this->requestProvider->getRequest()->requestVars() as $k => $v) {
             $records['PARAM_'.$k] = $v;
         }
-
+        self::$cachekeysinitialised = true;
         self::$last_edited_values = $records;
+
+        error_log('==== RECORDS ====');
+        error_log(print_r($records, true));
     }
 
 
