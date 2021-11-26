@@ -24,15 +24,13 @@ class CacheKeyHelper extends DataExtension
     /** @var RequestProvider */
     private $requestProvider;
 
-    /**
-     * @param RequestProvider $requestProvider
-     */
-    public function __construct($requestProvider = null)
+    public function __construct()
     {
-        $this->requestProvider = $requestProvider;
-        if (is_null($requestProvider)) {
-            $this->requestProvider = new CurrentControllerRequestProvider();
-        }
+        parent::__construct();
+        $clazzname = Config::inst()->get(CacheKeyHelper::class, 'provider');
+        #$clazzname = $this->getOwner()->config()->get('provider');
+        error_log('+++++++++ CN = ' . $clazzname);
+        $this->requestProvider = new $clazzname;
     }
 
     /**
@@ -215,6 +213,7 @@ class CacheKeyHelper extends DataExtension
         $records = DB::query($sql)->first();
 
 
+        // @TODO is this necessary as POST vars would override
         // now append the request params, stored as PARAM_<parameter name> -> parameter value
         foreach ($this->requestProvider->getRequest()->requestVars() as $k => $v) {
             $records['PARAM_'.$k] = $v;

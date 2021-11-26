@@ -1,0 +1,5 @@
+---
+Name: cachekeyhelperprovider
+---
+WebOfTalent\Cache\CacheKeyHelper:
+  provider: WebOfTalent\Cache\CurrentControllerRequestProvider

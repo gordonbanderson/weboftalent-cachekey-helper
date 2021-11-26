@@ -39,7 +39,8 @@ class CacheKeyHelperTest extends FunctionalTest
 //        $response = $this->get('home/?x=40&y=52');
 
 
-        $request = new HTTPRequest('GET', '/?x=40&y=52');
+        $request = new HTTPRequest('GET', '/');
+        $request->setUrl('/x=40&y=20');
 
         $request->setSession(new Session([]));
         $security = new Security();
@@ -55,6 +56,7 @@ class CacheKeyHelperTest extends FunctionalTest
 
         $c = Controller::curr();
         error_log(print_r($c->getRequest()->requestVars(), true));
+        error_log(print_r($c->getRequest()->getVars(), true));
 
     }
 
