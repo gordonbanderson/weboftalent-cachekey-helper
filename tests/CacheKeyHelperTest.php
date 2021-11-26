@@ -18,8 +18,7 @@ class CacheKeyHelperTest extends FunctionalTest
     {
         parent::setUp();
 
-        $this->homePage = SiteTree::get_by_id(1);
-
+        $this->homePage = $this->objFromFixture(SiteTree::class, 'homepage');
         /** @var array<\Page> $pages */
         $pages = SiteTree::get();
         foreach ($pages as $page) {
