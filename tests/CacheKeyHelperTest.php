@@ -4,17 +4,8 @@ declare(strict_types = 1);
 
 namespace WebOfTalent\Cache\Tests;
 
-use http\Env\Request;
-use PHPStan\BetterReflection\Reflection\ReflectionProperty;
 use SilverStripe\CMS\Model\SiteTree;
-use SilverStripe\Control\Controller;
-use SilverStripe\Control\HTTPRequest;
-use SilverStripe\Control\RequestHandler;
-use SilverStripe\Control\Session;
-use SilverStripe\Core\Config\Config;
 use SilverStripe\Dev\FunctionalTest;
-use SilverStripe\Security\Security;
-use WebOfTalent\Cache\CacheKeyHelper;
 
 class CacheKeyHelperTest extends FunctionalTest
 {
@@ -33,8 +24,6 @@ class CacheKeyHelperTest extends FunctionalTest
 
     /**
      * If a URL has likes of ?page=2 create a param cache key of the form page_2
-     *
-     * @return void
      */
     public function testCacheKeyGetParam(): void
     {

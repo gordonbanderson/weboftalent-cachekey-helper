@@ -5,7 +5,6 @@ declare(strict_types = 1);
 namespace WebOfTalent\Cache;
 
 use SilverStripe\CMS\Model\SiteTree;
-use SilverStripe\Control\Controller;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\ORM\DataExtension;
@@ -16,20 +15,22 @@ use SilverStripe\ORM\DB;
 // @phpcs:disable SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingTraversableTypeHintSpecification
 class CacheKeyHelper extends DataExtension
 {
+    /** @var \WebOfTalent\Cache\RequestProvider */
+    private $requestProvider;
+
     /** @var array<string,string> <Name>LastEdited -> some calculated key value */
     private static $last_edited_values = array();
 
     /** @var bool Flag to ensure that the query is run only once */
     private static $cachekeysinitialised = false;
 
-    /** @var RequestProvider */
-    private $requestProvider;
-
     public function __construct()
     {
         parent::__construct();
+
         $this->requestProvider = Injector::inst()->get('WebOfTalent\Cache\CurrentControllerRequestProvider');
     }
+
 
     /**
     * Obtain a part of the cache key fragment based on a parameter name
@@ -65,8 +66,8 @@ class CacheKeyHelper extends DataExtension
     public function CacheKeyGetParam(string $parameterName): string
     {
         $getvars = $this->requestProvider->getRequest()->getVars();
-        error_log('CACHE KEY GET PARAM: getvars=' );
-        error_log(print_r($getvars, true));
+        \error_log('CACHE KEY GET PARAM: getvars=');
+        \error_log(\print_r($getvars, true));
         $result = '';
         if (isset($getvars[$parameterName])) {
             $result = $parameterName . '_' . $getvars[$parameterName];
@@ -99,6 +100,7 @@ class CacheKeyHelper extends DataExtension
     public function CacheKey(string $prefix, string $classname): string
     {
         $this->prime_cache_keys();
+
         return $this->CacheDataKey($prefix, $classname);
     }
 
@@ -117,6 +119,7 @@ class CacheKeyHelper extends DataExtension
     public function CacheDataKey(string $prefix, string $classname): string
     {
         $this->prime_cache_keys();
+
         return $prefix.'_'.self::$last_edited_values[$classname.'LastEdited'];
     }
 
@@ -218,8 +221,8 @@ class CacheKeyHelper extends DataExtension
         self::$cachekeysinitialised = true;
         self::$last_edited_values = $records;
 
-        error_log('==== RECORDS ====');
-        error_log(print_r($records, true));
+        \error_log('==== RECORDS ====');
+        \error_log(\print_r($records, true));
     }
 
 
