@@ -15,62 +15,56 @@ use SilverStripe\ORM\DB;
 // @phpcs:disable SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingTraversableTypeHintSpecification
 class CacheKeyHelper extends DataExtension
 {
-    /** @var \WebOfTalent\Cache\RequestProvider */
-    private $requestProvider;
+    /** @var \WebOfTalent\Cache\RequestProvider | null */
+    private $requestProvider ;
 
     /** @var array<string,string> <Name>LastEdited -> some calculated key value */
-    private static $last_edited_values = array();
+    private static $last_edited_values = [];
 
     /** @var bool Flag to ensure that the query is run only once */
     private static $cachekeysinitialised = false;
 
-    public function __construct()
-    {
-        parent::__construct();
-
-        $this->requestProvider = Injector::inst()->get('WebOfTalent\Cache\CurrentControllerRequestProvider');
-    }
-
-
     /**
-    * Obtain a part of the cache key fragment based on a parameter name
+    * Obtain a part of the cache key fragment based on a parameter name obtained from routing only
     * In a template this would look like <tt>$CacheParamKey('start')</tt>
-
-    * @param string $param the parameter being used to cache
-    * @return string a unique string suitable as a cache key
+     *
+     * @param string $parameterName the parameter, obtained from routing, being used to cache
+    * @return string a unique string suitable as a cache key related to the current request
     */
-    public function CacheParamKey(string $param): string
+    public function CacheKeyParamVar(string $parameterName): string
     {
         $this->prime_cache_keys();
 
-        // check URL parameters
-        $key = 'PARAM_'.$param;
-        $value = null;
-        if (isset(self::$last_edited_values[$key])) {
-            $value = self::$last_edited_values[$key];
-        };
+        // if no parameter match, we wish to return a blank
+        $result = '';
 
-        // if still null check parameters from routing configuration
-        if ($value === null) {
-            $request = $this->requestProvider->getRequest();
-            $value = $request->param($param);
+        /* @phpstan-ignore-next-line */
+        $request = $this->requestProvider->getRequest();
+
+        // SilverStripe PHP doc is incorrect here, as such override
+        /** @var string|null $paramValue */
+        $paramValue = $request->param($parameterName);
+
+        if (isset($paramValue)) {
+            $result = '_'.$parameterName . '_' . $paramValue;
         }
 
-        return '_'.$param.'_'.$value;
+        return $result;
     }
 
 
     /**
      * Append a url parameter to the cache key. This is useful for example when using pagination
+     *
+     * @param string $getVarName The name of the GET variable
      */
-    public function CacheKeyGetParam(string $parameterName): string
+    public function CacheKeyGetVar(string $getVarName): string
     {
+        /* @phpstan-ignore-next-line */
         $getvars = $this->requestProvider->getRequest()->getVars();
-        \error_log('CACHE KEY GET PARAM: getvars=');
-        \error_log(\print_r($getvars, true));
         $result = '';
-        if (isset($getvars[$parameterName])) {
-            $result = $parameterName . '_' . $getvars[$parameterName];
+        if (isset($getvars[$getVarName])) {
+            $result = '_' . $getVarName . '_' . $getvars[$getVarName];
         }
 
         return $result;
@@ -91,21 +85,6 @@ class CacheKeyHelper extends DataExtension
 
 
     /**
-    * Old name for this method, as request params now included
-     *
-     * @param string $prefix - an arbitrary prefix to differentiate from different areas of a page of pages,
-       e.g. folderofarticles,homepagearticles
-     * @param string $classname - the classname that we wish to find the most recent last edited value of
-     */
-    public function CacheKey(string $prefix, string $classname): string
-    {
-        $this->prime_cache_keys();
-
-        return $this->CacheDataKey($prefix, $classname);
-    }
-
-
-    /**
     Obtain a cache for a given class with a given prefix, to be used in templates for partial
     caching. It is designed to ensure that the query for caching is only called once and that all
     caching values are calculated at this time. They are subsequently stored in a
@@ -116,11 +95,15 @@ class CacheKeyHelper extends DataExtension
     @param string $classname - the classname that we wish to find the most recent last edited value of
      * @return string the key for the possibly cached data
     */
-    public function CacheDataKey(string $prefix, string $classname): string
+    public function CacheKeyLastEdited(string $prefix, string $classname): string
     {
         $this->prime_cache_keys();
+        $result = '';
+        if (isset(self::$last_edited_values[$classname.'LastEdited'])) {
+            $result = $prefix.'_'.self::$last_edited_values[$classname.'LastEdited'];
+        }
 
-        return $prefix.'_'.self::$last_edited_values[$classname.'LastEdited'];
+        return $result;
     }
 
     /*
@@ -140,8 +123,14 @@ class CacheKeyHelper extends DataExtension
     */
     private function prime_cache_keys(): void
     {
+
         if (self::$cachekeysinitialised) {
             return;
+        }
+
+        if (\is_null($this->requestProvider)) {
+            $this->requestProvider = Injector::inst()->get('WebOfTalent\Cache\CurrentControllerRequestProvider');
+            \error_log('>>>>> request provider is ' . \get_class($this->requestProvider));
         }
 
         // get the classes to get a cache key with from the site tree
