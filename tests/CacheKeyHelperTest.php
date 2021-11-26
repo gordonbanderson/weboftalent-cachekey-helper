@@ -60,7 +60,6 @@ class CacheKeyHelperTest extends FunctionalTest
     {
         $homePage = SiteTree::get_by_id(1);
         $this->assertEquals('wibble', $homePage->CacheKeyLastEdited('testing', 'CurrentPage'));
-        
     }
 
 
