@@ -9,6 +9,8 @@ use SilverStripe\Dev\FunctionalTest;
 
 class CacheKeyHelperTest extends FunctionalTest
 {
+    protected static $fixture_file = 'fixtures.yml';
+
     /** @var \SilverStripe\CMS\Model\SiteTree */
     private $homePage;
 
@@ -17,6 +19,12 @@ class CacheKeyHelperTest extends FunctionalTest
         parent::setUp();
 
         $this->homePage = SiteTree::get_by_id(1);
+
+        /** @var array<\Page> $pages */
+        $pages = SiteTree::get();
+        foreach ($pages as $page) {
+            $page->publishRecursive();
+        }
     }
 
 
@@ -29,12 +37,8 @@ class CacheKeyHelperTest extends FunctionalTest
         // this does not exist as a get variable, or a parameter
         $this->assertEquals('', $this->homePage->CacheKeyParamVar('doesnotexist'));
 
-
-//        // @todo Is this correct behaviour?
-//        $this->assertEquals('_z_', $homePage->CacheParamKey('z'));
-//
-//        //
-//        $this->assertEquals('_z_', $homePage->CacheParamKey('TopTwoLevelsLastEdited'));
+        \error_log('Title of home page: ' . $this->homePage->Title);
+        \error_log('Last edited of home page: ' . $this->homePage->LastEdited);
     }
 
 
@@ -61,22 +65,48 @@ class CacheKeyHelperTest extends FunctionalTest
         $this->assertGreaterThanOrEqual($thePeriod*900, \time());
     }
 
+/*
+ *     [ChildPageLastEdited] =>
+    [MemberLastEdited] => 2021-11-26 21:53:39
+    [GroupLastEdited] => 2021-11-26 21:53:39
+    [FileLastEdited] =>
+    [TopTwoLevelsLastEdited] => 2021-11-26 21:53:40
+    [SiteConfigLastEdited] => 2021-11-26 21:53:39
+    [SiblingPageLastEdited] => 2021-11-26 21:53:40
+    [PARAM_page] => 2
+    [PARAM_q] => Aristotle
 
-    public function testCacheKeyLastEdited(): void
+ */
+    public function testCacheKeyCurrentPageLastEdited(): void
     {
-        $homePage = SiteTree::get_by_id(1);
-        $this->assertEquals('wibble', $homePage->CacheKeyLastEdited('testing', 'CurrentPage'));
+        $this->checkLastEditedFor('CurrentPage');
     }
 
 
-    public function testCacheDataKey(): void
+    public function testCacheKeySiteTreeLastEdited(): void
     {
-        $this->markTestSkipped('TODO');
+        $this->checkLastEditedFor('SiteTree');
     }
 
 
-    public function testPrimeCacheKeys(): void
+    public function testCacheKeySiblingPageLastEdited(): void
     {
-        $this->markTestSkipped('TODO');
+        $this->checkLastEditedFor('SiblingPage');
+    }
+
+
+    /** @throws \Exception */
+    private function checkLastEditedFor(string $entity): void
+    {
+        $cacheKey = $this->homePage->cacheKeyLastEdited('test', $entity);
+      //  $this->assertEquals('wibble', $cacheKey);
+        $this->assertStringStartsWith('test_', $cacheKey);
+        $dateOnly = \substr($cacheKey, 5);
+        \error_log('Date only' . ($dateOnly));
+        $dt = new \DateTime($dateOnly);
+        $timestamp = $dt->getTimestamp();
+        \error_log('TS  : ' . $timestamp);
+        \error_log('TIME: ' . \time());
+        $this->assertGreaterThan($timestamp, \time());
     }
 }
