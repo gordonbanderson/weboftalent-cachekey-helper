@@ -96,14 +96,18 @@ class CacheKeyHelperTest extends FunctionalTest
 
 
     /** @throws \Exception */
-    private function checkLastEditedFor(string $entity): void
+    private function checkLastEditedFor(string $entity, $expectedOriginalTime = null): void
     {
+        if (is_null($expectedOriginalTime)) {
+            $expectedOriginalTime = time();
+        }
+
         // the prefix test can be anything and should differ for different fragments of a page
         $cacheKey = $this->homePage->cacheKeyLastEdited('test', $entity);
         $this->assertStringStartsWith('test_', $cacheKey);
         $dateOnly = \substr($cacheKey, 5);
         $dt = new \DateTime($dateOnly);
         $timestamp = $dt->getTimestamp();
-        $this->assertGreaterThan($timestamp, \time());
+        $this->assertGreaterThan($timestamp, $expectedOriginalTime);
     }
 }
