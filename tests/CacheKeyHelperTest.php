@@ -9,16 +9,25 @@ use SilverStripe\Dev\FunctionalTest;
 
 class CacheKeyHelperTest extends FunctionalTest
 {
+    /** @var \SilverStripe\CMS\Model\SiteTree */
+    private $homePage;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->homePage = SiteTree::get_by_id(1);
+    }
+
+
     public function testCacheKeyParamVar(): void
     {
-        $homePage = SiteTree::get_by_id(1);
-
         // These are valid GET variables, but params come from the routing
-        $this->assertEquals('', $homePage->CacheKeyParamVar('page'));
-        $this->assertEquals('', $homePage->CacheKeyParamVar('q'));
+        $this->assertEquals('', $this->homePage->CacheKeyParamVar('page'));
+        $this->assertEquals('', $this->homePage->CacheKeyParamVar('q'));
 
         // this does not exist as a get variable, or a parameter
-        $this->assertEquals('', $homePage->CacheKeyParamVar('doesnotexist'));
+        $this->assertEquals('', $this->homePage->CacheKeyParamVar('doesnotexist'));
 
 
 //        // @todo Is this correct behaviour?
@@ -34,19 +43,16 @@ class CacheKeyHelperTest extends FunctionalTest
      */
     public function testCacheKeyGetVar(): void
     {
-        $homePage = SiteTree::get_by_id(1);
-
-        $this->assertEquals('_page_2', $homePage->CacheKeyGetVar('page'));
-         $this->assertEquals('_q_Aristotle', $homePage->CacheKeyGetVar('q'));
-        $this->assertEquals('', $homePage->CacheKeyGetVar('doesnotexist'));
+        $this->assertEquals('_page_2', $this->homePage->CacheKeyGetVar('page'));
+        $this->assertEquals('_q_Aristotle', $this->homePage->CacheKeyGetVar('q'));
+        $this->assertEquals('', $this->homePage->CacheKeyGetVar('doesnotexist'));
     }
 
 
     public function testPeriodKey(): void
     {
-        $homePage = SiteTree::get_by_id(1);
         # 15 mins
-        $periodKey = $homePage->PeriodKey(900);
+        $periodKey = $this->homePage->PeriodKey(900);
         $this->assertStringStartsWith('period_900_', $periodKey);
         $splits = \explode('_', $periodKey);
         $thePeriod = \intval($splits[2]);
