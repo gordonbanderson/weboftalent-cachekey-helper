@@ -98,15 +98,12 @@ class CacheKeyHelperTest extends FunctionalTest
     /** @throws \Exception */
     private function checkLastEditedFor(string $entity): void
     {
+        // the prefix test can be anything and should differ for different fragments of a page
         $cacheKey = $this->homePage->cacheKeyLastEdited('test', $entity);
-      //  $this->assertEquals('wibble', $cacheKey);
         $this->assertStringStartsWith('test_', $cacheKey);
         $dateOnly = \substr($cacheKey, 5);
-        \error_log('Date only' . ($dateOnly));
         $dt = new \DateTime($dateOnly);
         $timestamp = $dt->getTimestamp();
-        \error_log('TS  : ' . $timestamp);
-        \error_log('TIME: ' . \time());
         $this->assertGreaterThan($timestamp, \time());
     }
 }

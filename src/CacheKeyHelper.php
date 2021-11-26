@@ -130,7 +130,6 @@ class CacheKeyHelper extends DataExtension
 
         if (\is_null($this->requestProvider)) {
             $this->requestProvider = Injector::inst()->get('WebOfTalent\Cache\CurrentControllerRequestProvider');
-            \error_log('>>>>> request provider is ' . \get_class($this->requestProvider));
         }
 
         // get the classes to get a cache key with from the site tree
@@ -209,9 +208,6 @@ class CacheKeyHelper extends DataExtension
         }
         self::$cachekeysinitialised = true;
         self::$last_edited_values = $records;
-
-        \error_log('==== RECORDS ====');
-        \error_log(\print_r($records, true));
     }
 
 
