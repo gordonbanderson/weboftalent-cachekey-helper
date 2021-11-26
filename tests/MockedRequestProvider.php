@@ -20,13 +20,14 @@ class MockedRequestProvider implements RequestProvider
     /** @var HTTPRequest */
     private $mockedRequest;
 
-    /**
-     * @param HTTPRequest $request
-     */
-    public function __construct($request)
+    public function __construct()
     {
-        $this->mockedRequest = $request;
+        $this->mockedRequest = new HTTPRequest('GET','/', [
+            'page' => 2,
+            'q' => 'Aristotle'
+        ]);
     }
+
 
     /**
      * @return HTTPRequest

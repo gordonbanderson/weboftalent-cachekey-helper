@@ -11,22 +11,19 @@ use SilverStripe\Control\Controller;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\RequestHandler;
 use SilverStripe\Control\Session;
+use SilverStripe\Core\Config\Config;
 use SilverStripe\Dev\FunctionalTest;
 use SilverStripe\Security\Security;
+use WebOfTalent\Cache\CacheKeyHelper;
 
 class CacheKeyHelperTest extends FunctionalTest
 {
     public function testCacheParamKey(): void
     {
         $homePage = SiteTree::get_by_id(1);
-        $response = $this->get('home/?x=40&y=52');
 
-
-        // Home page should load..
-        $this->assertEquals(200, $response->getStatusCode());
-
-        $this->assertEquals('_x_', $homePage->CacheParamKey('x'));
-        $this->assertEquals('_y_', $homePage->CacheParamKey('y'));
+        $this->assertEquals('_page_', $homePage->CacheParamKey('page'));
+        $this->assertEquals('_q_', $homePage->CacheParamKey('q'));
 
         // this will still work even if not present in the URL
         $this->assertEquals('_z_', $homePage->CacheParamKey('z'));
@@ -35,29 +32,11 @@ class CacheKeyHelperTest extends FunctionalTest
 
     public function testCacheKeyGetParam(): void
     {
-//        $homePage = SiteTree::get_by_id(1);
-//        $response = $this->get('home/?x=40&y=52');
+        $homePage = SiteTree::get_by_id(1);
 
-
-        $request = new HTTPRequest('GET', '/');
-        $request->setUrl('/x=40&y=20');
-
-        $request->setSession(new Session([]));
-        $security = new Security();
-        $security->setRequest($request);
-        $reflection = new \ReflectionClass($security);
-        $method = $reflection->getMethod('getResponseController');
-        $method->setAccessible(true);
-        $result = $method->invoke($security, 'Page');
-
-        // Ensure page shares the same controller as security
-        $this->assertInstanceOf(\PageController::class, $result);
-        $this->assertEquals($request, $result->getRequest());
-
-        $c = Controller::curr();
-        error_log(print_r($c->getRequest()->requestVars(), true));
-        error_log(print_r($c->getRequest()->getVars(), true));
-
+        $this->assertEquals('page_2', $homePage->CacheKeyGetParam('page'));
+        $this->assertEquals('q_Aristotle', $homePage->CacheKeyGetParam('q'));
+        $this->assertEquals('', $homePage->CacheKeyGetParam('doesnotexist'));
     }
 
 
