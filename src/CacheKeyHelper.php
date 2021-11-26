@@ -7,6 +7,7 @@ namespace WebOfTalent\Cache;
 use SilverStripe\CMS\Model\SiteTree;
 use SilverStripe\Control\Controller;
 use SilverStripe\Core\Config\Config;
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\ORM\DataExtension;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\DB;
@@ -27,10 +28,12 @@ class CacheKeyHelper extends DataExtension
     public function __construct()
     {
         parent::__construct();
-        $clazzname = Config::inst()->get(CacheKeyHelper::class, 'provider');
-        #$clazzname = $this->getOwner()->config()->get('provider');
-        error_log('+++++++++ CN = ' . $clazzname);
-        $this->requestProvider = new $clazzname;
+//        $clazzname = Config::inst()->get(CacheKeyHelper::class, 'provider');
+//        #$clazzname = $this->getOwner()->config()->get('provider');
+//        error_log('+++++++++ CN = ' . $clazzname);
+//         = new $clazzname;
+
+        $this->requestProvider = Injector::inst()->get('WebOfTalent\Cache\CurrentControllerRequestProvider');
     }
 
     /**
@@ -70,12 +73,14 @@ class CacheKeyHelper extends DataExtension
     public function CacheKeyGetParam(string $parameterName): string
     {
         $getvars = $this->requestProvider->getRequest()->getVars();
+        error_log('CACHE KEY GET PARAM: getvars=' );
+        error_log(print_r($getvars, true));
         $result = '';
         if (isset($getvars[$parameterName])) {
-            $result = $getvars[$parameterName];
+            $result = $parameterName . '_' . $getvars[$parameterName];
         }
 
-        return $parameterName . '_' . $result;
+        return $result;
     }
 
 
