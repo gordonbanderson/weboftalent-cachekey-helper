@@ -1,19 +1,10 @@
 ---
-Name: cachekeyhelper-testing-reset
-After: cachekeyhelpercore
-Only:
-  envvarset:
-    - UNIT_TESTING_CKH_CONFIG_ENABLED
----
-WebOfTalent\Cache\CacheKeyHelper:
-  provider: null # See https://docs.silverstripe.org/en/4/developer_guides/configuration/configuration/
-
----
 Name: cachekeyhelper-testing
 After: cachekeyhelper-testing-reset
 Only:
   envvarset:
     - UNIT_TESTING_CKH_CONFIG_ENABLED
 ---
-WebOfTalent\Cache\CacheKeyHelper:
-  provider: WebOfTalent\Cache\Tests\MockedRequestProvider
+SilverStripe\Core\Injector\Injector:
+  WebOfTalent\Cache\CurrentControllerRequestProvider:
+    class: WebOfTalent\Cache\Tests\MockedRequestProvider
