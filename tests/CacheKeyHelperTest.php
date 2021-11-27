@@ -88,6 +88,22 @@ class CacheKeyHelperTest extends FunctionalTest
     }
 
 
+    public function testCacheKeyLevel1SiblingPageLastEdited(): void
+    {
+        // get the first page at the second level and note the last edited time
+        $homepage = $this->objFromFixture(SiteTree::class, 'homepage');
+        $lastEdited = $homepage->LastEdited;
+
+        // wait, alter and then publish another item at the same level
+        sleep(2);
+        $topLevel2 = $this->objFromFixture(SiteTree::class, 'topLevel2');
+        $topLevel2->Content = 'This has been edited';
+        $topLevel2->write();
+        $topLevel2->publish('Stage', 'Live');
+
+        $this->checkLastEditedFor($homepage, 'SiblingPage', $lastEdited);
+    }
+
     public function testCacheKeyLevel2SiblingPageLastEdited(): void
     {
         // get the first page at the second level and note the last edited time
@@ -142,8 +158,8 @@ class CacheKeyHelperTest extends FunctionalTest
         $dateOnly = \substr($cacheKey, 5);
         $dt = new \DateTime($dateOnly);
         $timestamp = $dt->getTimestamp();
-        error_log('T1: ' . $timestamp);
-        error_log('T2: ' . $expectedLastEdited);
+      //  error_log('T1: ' . $timestamp);
+      //  error_log('T2: ' . $expectedLastEdited);
         $this->assertGreaterThan($timestamp, $expectedLastEdited);
     }
 }

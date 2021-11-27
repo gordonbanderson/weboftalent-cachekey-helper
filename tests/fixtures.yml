@@ -3,15 +3,15 @@ SilverStripe\CMS\Model\SiteTree:
     Title: Home Page From Fixtures
     Content: This is the home page
 
-  toplevel2:
+  topLevel2:
     Title: Top Level 2
     Content: This is top level 2
 
-  toplevel3:
+  topLevel3:
     Title: Top Level 3
     Content: This is top level 3
 
-  toplevel4:
+  topLevel4:
     Title: Top Level 4
     Content: This is top level 4
 
