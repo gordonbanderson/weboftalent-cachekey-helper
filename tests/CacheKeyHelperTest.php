@@ -78,27 +78,62 @@ class CacheKeyHelperTest extends FunctionalTest
  */
     public function testCacheKeyCurrentPageLastEdited(): void
     {
-        $this->checkLastEditedFor('CurrentPage');
+        $this->checkLastEditedFor($this->homePage, 'CurrentPage');
     }
 
 
     public function testCacheKeySiteTreeLastEdited(): void
     {
-        $this->checkLastEditedFor('SiteTree');
+        $this->checkLastEditedFor($this->homePage, 'SiteTree');
     }
 
 
-    public function testCacheKeySiblingPageLastEdited(): void
+    public function testCacheKeyLevel2SiblingPageLastEdited(): void
     {
-        $this->checkLastEditedFor('SiblingPage');
+        // get the first page at the second level and note the last edited time
+        $secondLevel1 = $this->objFromFixture(SiteTree::class, 'secondLevel1');
+        $lastEdited = $secondLevel1->LastEdited;
+
+        // wait, alter and then publish another item at the same level
+        sleep(2);
+        $secondLevel2 = $this->objFromFixture(SiteTree::class, 'secondLevel2');
+        $secondLevel2->Content = 'This has been edited';
+        $secondLevel2->write();
+        $secondLevel2->publish('Stage', 'Live');
+
+        $this->checkLastEditedFor($secondLevel1, 'SiblingPage', $lastEdited);
     }
 
 
-    /** @throws \Exception */
-    private function checkLastEditedFor(string $entity, $expectedOriginalTime = null): void
+    public function testCacheKeyLevel3SiblingPageLastEdited(): void
     {
-        if (is_null($expectedOriginalTime)) {
-            $expectedOriginalTime = time();
+        $thirdLevel1 = $this->objFromFixture(SiteTree::class, 'thirdLevel1');
+        $lastEdited = $thirdLevel1->LastEdited;
+        $this->checkLastEditedFor($this->homePage,'SiblingPage');
+
+        sleep(2);
+        $thirdLevel2 = $this->objFromFixture(SiteTree::class, 'thirdLevel2');
+        $thirdLevel2->Content = 'This has been edited';
+        $thirdLevel2->write();
+        $thirdLevel2->publish('Stage', 'Live');
+
+        $this->checkLastEditedFor($thirdLevel1, 'SiblingPage', $lastEdited);
+    }
+
+
+    /**
+     * @param Page $page
+     * @param string $entity
+     * @param string|null $previousLastEdited
+     * @return void
+     * @throws \Exception
+     */
+    private function checkLastEditedFor($page, string $entity, $previousLastEdited = null): void
+    {
+        $expectedLastEdited = time();
+        if (!is_null($previousLastEdited)) {
+            $dt = new \DateTime($previousLastEdited);
+            $expectedLastEdited = $dt->getTimestamp();
         }
 
         // the prefix test can be anything and should differ for different fragments of a page
@@ -107,6 +142,8 @@ class CacheKeyHelperTest extends FunctionalTest
         $dateOnly = \substr($cacheKey, 5);
         $dt = new \DateTime($dateOnly);
         $timestamp = $dt->getTimestamp();
-        $this->assertGreaterThan($timestamp, $expectedOriginalTime);
+        error_log('T1: ' . $timestamp);
+        error_log('T2: ' . $expectedLastEdited);
+        $this->assertGreaterThan($timestamp, $expectedLastEdited);
     }
 }
