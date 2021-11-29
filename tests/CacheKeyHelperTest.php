@@ -132,10 +132,62 @@ class CacheKeyHelperTest extends FunctionalTest
         $thirdLevel2->write();
         $thirdLevel2->publish('Stage', 'Live');
 
-        // reload and then check that the timestamps are the same  Third level is NOT cache busted
         $thirdLevel1 = $this->objFromFixture(SiteTree::class, 'thirdLevel1');
         $this->checkLastEditedFor($thirdLevel1, 'SiblingPage', $lastEdited);
     }
+
+
+    public function testCacheKeyLevel2TopTwoLevelsLastEdited(): void
+    {
+        // get the first page at the second level and note the last edited time
+        $secondLevel1 = $this->objFromFixture(SiteTree::class, 'secondLevel1');
+        $lastEdited = $secondLevel1->LastEdited;
+
+        // wait, alter and then publish another item at the same level
+        \sleep(2);
+        $secondLevel2 = $this->objFromFixture(SiteTree::class, 'secondLevel2');
+        $secondLevel2->Content = 'This has been edited';
+        $secondLevel2->write();
+        $secondLevel2->publish('Stage', 'Live');
+
+        $secondLevel1 = $this->objFromFixture(SiteTree::class, 'secondLevel1');
+        $this->checkLastEditedFor($secondLevel1, 'TopTwoLevels', $lastEdited);
+    }
+
+
+    public function testCacheKeyLevel1TopTwoLevels(): void
+    {
+        // get the first page at the second level and note the last edited time
+        $homepage = $this->objFromFixture(SiteTree::class, 'homepage');
+        $lastEdited = $homepage->LastEdited;
+
+        // wait, alter and then publish another item at the same level
+        \sleep(2);
+        $topLevel2 = $this->objFromFixture(SiteTree::class, 'topLevel2');
+        $topLevel2->Content = 'This has been edited';
+        $topLevel2->write();
+        $topLevel2->publish('Stage', 'Live');
+
+        $homepage = $this->objFromFixture(SiteTree::class, 'homepage');
+        $this->checkLastEditedFor($homepage, 'TopTwoLevels', $lastEdited);
+    }
+
+    public function testCacheKeyLevel3TopTwoLevelsLastEdited(): void
+    {
+        $thirdLevel1 = $this->objFromFixture(SiteTree::class, 'thirdLevel1');
+        $lastEdited = $thirdLevel1->LastEdited;
+
+        \sleep(2);
+        $thirdLevel2 = $this->objFromFixture(SiteTree::class, 'thirdLevel2');
+        $thirdLevel2->Content = 'This has been edited';
+        $thirdLevel2->write();
+        $thirdLevel2->publish('Stage', 'Live');
+
+        // reload and then check that the timestamps are the same  Third level is NOT cache busted
+        $thirdLevel1 = $this->objFromFixture(SiteTree::class, 'thirdLevel1');
+        $this->checkLastEditedFor($thirdLevel1, 'TopTwoLevels', $lastEdited, false, true);
+    }
+
 
 
     /** @throws \Exception */
