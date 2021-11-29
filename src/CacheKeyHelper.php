@@ -24,6 +24,13 @@ class CacheKeyHelper extends DataExtension
     /** @var bool Flag to ensure that the query is run only once */
     private static $cachekeysinitialised = false;
 
+
+    public function resetCache(): void
+    {
+        self::$cachekeysinitialised = false;
+    }
+
+
     /**
     * Obtain a part of the cache key fragment based on a parameter name obtained from routing only
     * In a template this would look like <tt>$CacheParamKey('start')</tt>

@@ -35,9 +35,6 @@ class CacheKeyHelperTest extends FunctionalTest
 
         // this does not exist as a get variable, or a parameter
         $this->assertEquals('', $this->homePage->CacheKeyParamVar('doesnotexist'));
-
-        \error_log('Title of home page: ' . $this->homePage->Title);
-        \error_log('Last edited of home page: ' . $this->homePage->LastEdited);
     }
 
 
@@ -95,14 +92,16 @@ class CacheKeyHelperTest extends FunctionalTest
         $lastEdited = $homepage->LastEdited;
 
         // wait, alter and then publish another item at the same level
-        sleep(2);
+        \sleep(2);
         $topLevel2 = $this->objFromFixture(SiteTree::class, 'topLevel2');
         $topLevel2->Content = 'This has been edited';
         $topLevel2->write();
         $topLevel2->publish('Stage', 'Live');
 
+        $homepage = $this->objFromFixture(SiteTree::class, 'homepage');
         $this->checkLastEditedFor($homepage, 'SiblingPage', $lastEdited);
     }
+
 
     public function testCacheKeyLevel2SiblingPageLastEdited(): void
     {
@@ -111,12 +110,13 @@ class CacheKeyHelperTest extends FunctionalTest
         $lastEdited = $secondLevel1->LastEdited;
 
         // wait, alter and then publish another item at the same level
-        sleep(2);
+        \sleep(2);
         $secondLevel2 = $this->objFromFixture(SiteTree::class, 'secondLevel2');
         $secondLevel2->Content = 'This has been edited';
         $secondLevel2->write();
         $secondLevel2->publish('Stage', 'Live');
 
+        $secondLevel1 = $this->objFromFixture(SiteTree::class, 'secondLevel1');
         $this->checkLastEditedFor($secondLevel1, 'SiblingPage', $lastEdited);
     }
 
@@ -125,41 +125,49 @@ class CacheKeyHelperTest extends FunctionalTest
     {
         $thirdLevel1 = $this->objFromFixture(SiteTree::class, 'thirdLevel1');
         $lastEdited = $thirdLevel1->LastEdited;
-        $this->checkLastEditedFor($this->homePage,'SiblingPage');
 
-        sleep(2);
+        \sleep(2);
         $thirdLevel2 = $this->objFromFixture(SiteTree::class, 'thirdLevel2');
         $thirdLevel2->Content = 'This has been edited';
         $thirdLevel2->write();
         $thirdLevel2->publish('Stage', 'Live');
 
+        // reload and then check that the timestamps are the same  Third level is NOT cache busted
+        $thirdLevel1 = $this->objFromFixture(SiteTree::class, 'thirdLevel1');
         $this->checkLastEditedFor($thirdLevel1, 'SiblingPage', $lastEdited);
     }
 
 
-    /**
-     * @param Page $page
-     * @param string $entity
-     * @param string|null $previousLastEdited
-     * @return void
-     * @throws \Exception
-     */
-    private function checkLastEditedFor($page, string $entity, $previousLastEdited = null): void
-    {
-        $expectedLastEdited = time();
-        if (!is_null($previousLastEdited)) {
+    /** @throws \Exception */
+    private function checkLastEditedFor(
+        SiteTree $page,
+        string $entity,
+        ?string $previousLastEdited = null,
+        bool $greaterThanCheck = true,
+        bool $sameAsCheck = false
+    ): void {
+        $expectedLastEdited = \time();
+        if (!\is_null($previousLastEdited)) {
             $dt = new \DateTime($previousLastEdited);
             $expectedLastEdited = $dt->getTimestamp();
         }
 
         // the prefix test can be anything and should differ for different fragments of a page
-        $cacheKey = $this->homePage->cacheKeyLastEdited('test', $entity);
+        $page->resetCache();
+        $cacheKey = $page->cacheKeyLastEdited('test', $entity);
         $this->assertStringStartsWith('test_', $cacheKey);
         $dateOnly = \substr($cacheKey, 5);
         $dt = new \DateTime($dateOnly);
         $timestamp = $dt->getTimestamp();
-      //  error_log('T1: ' . $timestamp);
-      //  error_log('T2: ' . $expectedLastEdited);
-        $this->assertGreaterThan($timestamp, $expectedLastEdited);
+
+        if ($greaterThanCheck && !\is_null($previousLastEdited)) {
+            $this->assertGreaterThan($expectedLastEdited, $timestamp);
+        }
+
+        if (!$sameAsCheck) {
+            return;
+        }
+
+        $this->assertEquals($timestamp, $expectedLastEdited);
     }
 }
