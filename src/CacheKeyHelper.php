@@ -152,7 +152,7 @@ class CacheKeyHelper extends DataExtension
                 $tableName = $this->getTableName($classname);
 
                 $stanza = '(SELECT MAX("LastEdited") from "SiteTree_Live" '
-                    . "WHERE ClassName = '". $classname."')  AS \"{$tableName}LastEdited\" , ";
+                    . "WHERE \"ClassName\" = '". $classname."')  AS \"{$tableName}LastEdited\" , ";
                 $sql .= $stanza;
             }
         }
