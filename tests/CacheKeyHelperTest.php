@@ -6,6 +6,7 @@ namespace WebOfTalent\Cache\Tests;
 
 use SilverStripe\CMS\Model\SiteTree;
 use SilverStripe\Dev\FunctionalTest;
+use WebOfTalent\Cache\CacheKeyHelper;
 
 class CacheKeyHelperTest extends FunctionalTest
 {
@@ -24,6 +25,8 @@ class CacheKeyHelperTest extends FunctionalTest
         foreach ($pages as $page) {
             $page->publishRecursive();
         }
+
+        CacheKeyHelper::resetCache();
     }
 
 
@@ -223,7 +226,7 @@ class CacheKeyHelperTest extends FunctionalTest
         }
 
         // the prefix test can be anything and should differ for different fragments of a page
-        $page->resetCache();
+        CacheKeyhelper::resetCache();
         $cacheKey = $page->cacheKeyLastEdited('test', $entity);
         $this->assertStringStartsWith('test_', $cacheKey);
         $dateOnly = \substr($cacheKey, 5);
