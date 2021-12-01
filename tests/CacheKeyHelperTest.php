@@ -188,11 +188,6 @@ class CacheKeyHelperTest extends FunctionalTest
         $thirdLevel2->write();
         $thirdLevel2->publish('Stage', 'Live');
 
-
-        foreach (SiteTree::get() as $st) {
-            \error_log($st->Title . " --> \t" . $st->LastEdited);
-        }
-
         // reload and then check that the timestamps are the same  Third level is NOT cache busted
         $thirdLevel1 = $this->objFromFixture(SiteTree::class, 'thirdLevel1');
         $this->checkLastEditedFor($thirdLevel1, 'TopTwoLevels', $lastEdited, false, true);
@@ -205,7 +200,6 @@ class CacheKeyHelperTest extends FunctionalTest
 
         // remove leading underscore
         $key = substr($key, 1);
-        error_log('KEY: ' . $key);
 
         return $key;
     }
