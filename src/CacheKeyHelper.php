@@ -145,7 +145,7 @@ class CacheKeyHelper extends DataExtension
         $classes = $this->getOwner()->config()->get(SiteTree::class);
 
         $sql = 'SELECT (SELECT MAX("LastEdited") FROM "SiteTree_Live" WHERE "ParentID" = '.
-            $this->getOwner()->ID.') AS "ChildPageLastEdited",';
+            $this->owner->ID.') AS "ChildPageLastEdited",';
 
         if ($classes) {
             foreach ($classes as $classname) {
