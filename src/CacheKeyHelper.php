@@ -194,7 +194,7 @@ class CacheKeyHelper extends DataExtension
 
         // the current actual page
         // @phpstan-ignore-next-line
-        $sql .= "(SELECT \"LastEdited\" FROM \"SiteTree_Live\" WHERE ID=".$this->getOwner()->ID.
+        $sql .= "(SELECT \"LastEdited\" FROM \"SiteTree_Live\" WHERE \"ID\"=".$this->getOwner()->ID.
                 ") AS \"CurrentPageLastEdited\", ";
 
         // siblings, needed for side menu
