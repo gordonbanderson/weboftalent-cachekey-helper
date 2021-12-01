@@ -145,14 +145,14 @@ class CacheKeyHelper extends DataExtension
         $classes = $this->getOwner()->config()->get(SiteTree::class);
 
         $sql = 'SELECT (SELECT MAX("LastEdited") FROM "SiteTree_Live" WHERE "ParentID" = '.
-            $this->owner->ID.') AS "ChildPageLastEdited",';
+            $this->getOwner()->ID.') AS "ChildPageLastEdited",';
 
         if ($classes) {
             foreach ($classes as $classname) {
                 $tableName = $this->getTableName($classname);
 
                 $stanza = '(SELECT MAX("LastEdited") from "SiteTree_Live" '
-                    . "where ClassName = '". $classname."')  AS \"{$tableName}LastEdited\" , ";
+                    . "WHERE ClassName = '". $classname."')  AS \"{$tableName}LastEdited\" , ";
                 $sql .= $stanza;
             }
         }
@@ -164,7 +164,7 @@ class CacheKeyHelper extends DataExtension
         if ($classes) {
             foreach ($classes as $classname) {
                 $tableName = $this->getTableName($classname);
-                $stanza = '(SELECT MAX(LastEdited) from `'.$tableName.'`) AS ' .$tableName .'LastEdited, ';
+                $stanza = '(SELECT MAX("LastEdited") from "'.$tableName.'") AS "' .$tableName .'LastEdited", ';
                 $sql .= $stanza;
             }
         }
