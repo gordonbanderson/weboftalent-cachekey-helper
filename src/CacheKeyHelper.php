@@ -25,9 +25,10 @@ class CacheKeyHelper extends DataExtension
     private static $cachekeysinitialised = false;
 
 
-    public function resetCache(): void
+    public static function resetCache(): void
     {
         self::$cachekeysinitialised = false;
+        self::$last_edited_values = [];
     }
 
 
