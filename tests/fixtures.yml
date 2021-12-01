@@ -1,0 +1,77 @@
+SilverStripe\CMS\Model\SiteTree:
+  homepage:
+    Title: Home Page From Fixtures
+    Content: This is the home page
+
+  topLevel2:
+    Title: Top Level 2
+    Content: This is top level 2
+
+  topLevel3:
+    Title: Top Level 3
+    Content: This is top level 3
+
+  topLevel4:
+    Title: Top Level 4
+    Content: This is top level 4
+
+  secondLevel1:
+    Title: Second Level 1
+    Content: This is second level 1
+    Parent: =>SilverStripe\CMS\Model\SiteTree.homepage
+
+  secondLevel2:
+    Title: Second Level 2
+    Content: This is second level 2
+    Parent: =>SilverStripe\CMS\Model\SiteTree.homepage
+
+  secondLevel3:
+    Title: Second Level 3
+    Content: This is second level 3
+    Parent: =>SilverStripe\CMS\Model\SiteTree.homepage
+
+  secondLevel4:
+    Title: Second Level 4
+    Content: This is second level 4
+    Parent: =>SilverStripe\CMS\Model\SiteTree.homepage
+
+  thirdLevel1:
+    Title: Third Level 1
+    Content: This is third level 1
+    Parent: =>SilverStripe\CMS\Model\SiteTree.secondLevel2
+
+  thirdLevel2:
+    Title: Third Level 2
+    Content: This is third level 2
+    Parent: =>SilverStripe\CMS\Model\SiteTree.secondLevel2
+
+  thirdLevel3:
+    Title: Third Level 3
+    Content: This is third level 3
+    Parent: =>SilverStripe\CMS\Model\SiteTree.secondLevel2
+
+  thirdLevel4:
+    Title: Third Level 4
+    Content: This is third level 4
+    Parent: =>SilverStripe\CMS\Model\SiteTree.secondLevel2
+
+  fourthLevel1:
+    Title: Fourth Level 1
+    Content: This is fourth level 1
+    Parent: =>SilverStripe\CMS\Model\SiteTree.thirdLevel3
+
+  fourthLevel2:
+    Title: Fourth Level 2
+    Content: This is fourth level 2
+    Parent: =>SilverStripe\CMS\Model\SiteTree.thirdLevel3
+
+  fourthLevel3:
+    Title: Fourth Level 3
+    Content: This is fourth level 3
+    Parent: =>SilverStripe\CMS\Model\SiteTree.thirdLevel3
+
+  fourthLevel4:
+    Title: Fourth Level 4
+    Content: This is fourth level 4
+    Parent: =>SilverStripe\CMS\Model\SiteTree.thirdLevel3
+

@@ -11,11 +11,11 @@ RUN docker-php-ext-install pdo_mysql \
 RUN apt-get -y autoremove && apt-get -y clean
 
 # alter bash prompt
-ENV PS1A="\u@silverstripe-freetext-search.test:\w> "
+ENV PS1A="\u@silverstripe-cache-hey-helper.test:\w> "
 RUN echo 'PS1=$PS1A' >> ~/.bashrc
 
 # intro message when attaching to shell
-RUN echo 'figlet -w 120 SilverStripe Free Text Search' >> ~/.bashrc
+RUN echo 'figlet -w 120 SilverStripe Cache Key Helper' >> ~/.bashrc
 
 # install composer - see https://medium.com/@c.harrison/speedy-composer-installs-in-docker-builds-41eea6d0172b
 RUN curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/local/bin/composer

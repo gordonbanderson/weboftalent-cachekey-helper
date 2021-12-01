@@ -1,0 +1,10 @@
+---
+Name: cachekeyhelper-testing
+After: cachekeyhelper-testing-reset
+Only:
+  envvarset:
+    - UNIT_TESTING_CKH_CONFIG_ENABLED
+---
+SilverStripe\Core\Injector\Injector:
+  WebOfTalent\Cache\CurrentControllerRequestProvider:
+    class: WebOfTalent\Cache\Tests\MockedRequestProvider
