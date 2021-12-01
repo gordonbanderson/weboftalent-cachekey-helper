@@ -2,7 +2,7 @@ name: Module CI
 
 on:
   push:
-    branches: [ main, WRITE_UNIT_TESTS, FIX_POSTGRESQL ]
+    branches: [ main ]
   pull_request:
     branches: [ main ]
 
