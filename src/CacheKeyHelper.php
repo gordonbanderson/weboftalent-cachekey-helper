@@ -144,15 +144,15 @@ class CacheKeyHelper extends DataExtension
         // @phpstan-ignore-next-line
         $classes = $this->getOwner()->config()->get(SiteTree::class);
 
-        $sql = 'SELECT (SELECT MAX(LastEdited) FROM SiteTree_Live WHERE ParentID = '.
-            $this->owner->ID.') AS ChildPageLastEdited,';
+        $sql = 'SELECT (SELECT MAX("LastEdited") FROM "SiteTree_Live" WHERE "ParentID" = '.
+            $this->owner->ID.') AS "ChildPageLastEdited",';
 
         if ($classes) {
             foreach ($classes as $classname) {
                 $tableName = $this->getTableName($classname);
 
-                $stanza = "(SELECT MAX(LastEdited) from SiteTree_Live "
-                    . "where ClassName = '". $classname."')  AS {$tableName}LastEdited , ";
+                $stanza = '(SELECT MAX("LastEdited") from "SiteTree_Live" '
+                    . "where ClassName = '". $classname."')  AS \"{$tableName}LastEdited\" , ";
                 $sql .= $stanza;
             }
         }
