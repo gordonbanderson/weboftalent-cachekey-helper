@@ -66,9 +66,7 @@ class CacheKeyHelperTest extends FunctionalTest
     [MemberLastEdited] => 2021-11-26 21:53:39
     [GroupLastEdited] => 2021-11-26 21:53:39
     [FileLastEdited] =>
-    [TopTwoLevelsLastEdited] => 2021-11-26 21:53:40
     [SiteConfigLastEdited] => 2021-11-26 21:53:39
-    [SiblingPageLastEdited] => 2021-11-26 21:53:40
     [PARAM_page] => 2
     [PARAM_q] => Aristotle
 
@@ -172,6 +170,8 @@ class CacheKeyHelperTest extends FunctionalTest
         $this->checkLastEditedFor($homepage, 'TopTwoLevels', $lastEdited);
     }
 
+
+    // @todo This appears to be flakey in CI, fix
     public function testCacheKeyLevel3TopTwoLevelsLastEdited(): void
     {
         $thirdLevel1 = $this->objFromFixture(SiteTree::class, 'thirdLevel1');
@@ -182,6 +182,11 @@ class CacheKeyHelperTest extends FunctionalTest
         $thirdLevel2->Content = 'This has been edited';
         $thirdLevel2->write();
         $thirdLevel2->publish('Stage', 'Live');
+
+
+        foreach(SiteTree::get() as $st) {
+            error_log($st->Title . " --> \t" . $st->LastEdited);
+        }
 
         // reload and then check that the timestamps are the same  Third level is NOT cache busted
         $thirdLevel1 = $this->objFromFixture(SiteTree::class, 'thirdLevel1');
