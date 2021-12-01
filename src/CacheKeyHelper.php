@@ -25,13 +25,6 @@ class CacheKeyHelper extends DataExtension
     private static $cachekeysinitialised = false;
 
 
-    public static function resetCache(): void
-    {
-        self::$cachekeysinitialised = false;
-        self::$last_edited_values = [];
-    }
-
-
     /**
     * Obtain a part of the cache key fragment based on a parameter name obtained from routing only
     * In a template this would look like <tt>$CacheParamKey('start')</tt>
@@ -112,6 +105,13 @@ class CacheKeyHelper extends DataExtension
         }
 
         return $result;
+    }
+
+
+    public static function resetCache(): void
+    {
+        self::$cachekeysinitialised = false;
+        self::$last_edited_values = [];
     }
 
     /*

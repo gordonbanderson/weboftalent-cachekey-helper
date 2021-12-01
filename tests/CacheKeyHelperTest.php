@@ -194,12 +194,12 @@ class CacheKeyHelperTest extends FunctionalTest
     }
 
 
-    private function getLastEditedTopTwoLevels($page)
+    private function getLastEditedTopTwoLevels(SiteTree $page): string
     {
         $key = $page->CacheKeyLastEdited('', 'TopTwoLevels');
 
         // remove leading underscore
-        $key = substr($key, 1);
+        $key = \substr($key, 1);
 
         return $key;
     }
@@ -220,7 +220,7 @@ class CacheKeyHelperTest extends FunctionalTest
         }
 
         // the prefix test can be anything and should differ for different fragments of a page
-        CacheKeyhelper::resetCache();
+        CacheKeyHelper::resetCache();
         $cacheKey = $page->cacheKeyLastEdited('test', $entity);
         $this->assertStringStartsWith('test_', $cacheKey);
         $dateOnly = \substr($cacheKey, 5);
