@@ -144,15 +144,15 @@ class CacheKeyHelper extends DataExtension
         // @phpstan-ignore-next-line
         $classes = $this->getOwner()->config()->get(SiteTree::class);
 
-        $sql = 'SELECT (SELECT MAX(LastEdited) FROM SiteTree_Live WHERE ParentID = '.
-            $this->owner->ID.') AS ChildPageLastEdited,';
+        $sql = 'SELECT (SELECT MAX("LastEdited") FROM "SiteTree_Live" WHERE "ParentID" = '.
+            $this->owner->ID.') AS "ChildPageLastEdited",';
 
         if ($classes) {
             foreach ($classes as $classname) {
                 $tableName = $this->getTableName($classname);
 
-                $stanza = "(SELECT MAX(LastEdited) from SiteTree_Live "
-                    . "where ClassName = '". $classname."')  AS {$tableName}LastEdited , ";
+                $stanza = '(SELECT MAX("LastEdited") from "SiteTree_Live" '
+                    . "WHERE \"ClassName\" = '". $classname."')  AS \"{$tableName}LastEdited\" , ";
                 $sql .= $stanza;
             }
         }
@@ -164,25 +164,25 @@ class CacheKeyHelper extends DataExtension
         if ($classes) {
             foreach ($classes as $classname) {
                 $tableName = $this->getTableName($classname);
-                $stanza = '(SELECT MAX(LastEdited) from `'.$tableName.'`) AS ' .$tableName .'LastEdited, ';
+                $stanza = '(SELECT MAX("LastEdited") from "'.$tableName.'") AS "' .$tableName .'LastEdited", ';
                 $sql .= $stanza;
             }
         }
 
-        $sql .= '(SELECT Max(LastEdited) from
+        $sql .= '(SELECT Max("LastEdited") FROM
 					(
-						select LastEdited from SiteTree_Live
-						where ParentID = 0
-						AND ShowInMenus = 1
+						SELECT "LastEdited" FROM "SiteTree_Live"
+						WHERE "ParentID" = 0
+						AND "ShowInMenus" = 1
 
-						union
-						select LastEdited FROM SiteTree_Live
-						where ParentID IN
-							(SELECT ID from SiteTree_Live where ParentID = 0 and ShowInMenus = 1)
-						AND ShowInMenus = 1
-					) AS TopLevels
+						UNION
+						SELECT "LastEdited" FROM "SiteTree_Live"
+						WHERE "ParentID" IN
+							(SELECT "ID" FROM "SiteTree_Live" WHERE "ParentID" = 0 AND "ShowInMenus" = 1)
+						AND "ShowInMenus" = 1
+					) AS "TopLevels"
 
-				  ) AS TopTwoLevelsLastEdited,';
+				  ) AS "TopTwoLevelsLastEdited",';
 
         // if there is a member, get the last edited - cache for 5 mins (300 seconds), as Member is
         // saved every page request to update last visited
@@ -190,20 +190,20 @@ class CacheKeyHelper extends DataExtension
   //          Member::currentUserID().') as CurrentMemberLastEdited,';
 
         // site config
-        $sql .= "(SELECT LastEdited from `SiteConfig`) AS SiteConfigLastEdited, ";
+        $sql .= '(SELECT "LastEdited" FROM "SiteConfig") AS "SiteConfigLastEdited", ';
 
         // the current actual page
         // @phpstan-ignore-next-line
-        $sql .= "(SELECT LastEdited from SiteTree_Live where ID='".$this->getOwner()->ID.
-                "') as CurrentPageLastEdited,";
+        $sql .= "(SELECT \"LastEdited\" FROM \"SiteTree_Live\" WHERE \"ID\"=".$this->getOwner()->ID.
+                ") AS \"CurrentPageLastEdited\", ";
 
         // siblings, needed for side menu
-        $sql .= "(SELECT MAX(LastEdited) from SiteTree_Live where ParentID='".
+        $sql .= '(SELECT MAX("LastEdited") FROM "SiteTree_Live" WHERE "ParentID"='.
             // @phpstan-ignore-next-line
-            $this->getOwner()->ParentID."') as SiblingPageLastEdited,";
+            $this->getOwner()->ParentID.') as "SiblingPageLastEdited", ';
 
         // add a clause to check if any page on the site has changed, a major cache buster
-        $sql .= '(SELECT MAX(LastEdited) from SiteTree_Live) as SiteTreeLastEdited;';
+        $sql .= '(SELECT MAX("LastEdited") FROM "SiteTree_Live") AS "SiteTreeLastEdited";';
 
 
         $records = DB::query($sql)->first();
