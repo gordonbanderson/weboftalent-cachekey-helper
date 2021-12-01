@@ -216,7 +216,7 @@ class CacheKeyHelper extends DataExtension
         self::$cachekeysinitialised = true;
         self::$last_edited_values = $records;
 
-        error_log(print_r($records, true));
+        \error_log(\print_r($records, true));
     }
 
 

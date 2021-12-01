@@ -135,29 +135,11 @@ class CacheKeyHelperTest extends FunctionalTest
     }
 
 
-    public function testCacheKeyLevel2TopTwoLevelsLastEdited(): void
-    {
-        // get the first page at the second level and note the last edited time
-        $secondLevel1 = $this->objFromFixture(SiteTree::class, 'secondLevel1');
-        $lastEdited = $secondLevel1->LastEdited;
-
-        // wait, alter and then publish another item at the same level
-        \sleep(2);
-        $secondLevel2 = $this->objFromFixture(SiteTree::class, 'secondLevel2');
-        $secondLevel2->Content = 'This has been edited';
-        $secondLevel2->write();
-        $secondLevel2->publish('Stage', 'Live');
-
-        $secondLevel1 = $this->objFromFixture(SiteTree::class, 'secondLevel1');
-        $this->checkLastEditedFor($secondLevel1, 'TopTwoLevels', $lastEdited);
-    }
-
-
-    public function testCacheKeyLevel1TopTwoLevels(): void
+    public function testCacheKeyLevel1TopTwoLevelsLastEdited(): void
     {
         // get the first page at the second level and note the last edited time
         $homepage = $this->objFromFixture(SiteTree::class, 'homepage');
-        $lastEdited = $homepage->LastEdited;
+        $lastEdited = $this->getLastEditedTopTwoLevels($homepage);
 
         // wait, alter and then publish another item at the same level
         \sleep(2);
@@ -171,11 +153,31 @@ class CacheKeyHelperTest extends FunctionalTest
     }
 
 
+    public function testCacheKeyLevel2TopTwoLevelsLastEdited(): void
+    {
+        // get the first page at the second level and note the last edited time
+        $secondLevel1 = $this->objFromFixture(SiteTree::class, 'secondLevel1');
+        $lastEdited = $this->getLastEditedTopTwoLevels($secondLevel1);
+
+        // wait, alter and then publish another item at the same level
+        \sleep(2);
+        $secondLevel2 = $this->objFromFixture(SiteTree::class, 'secondLevel2');
+        $secondLevel2->Content = 'This has been edited';
+        $secondLevel2->write();
+        $secondLevel2->publish('Stage', 'Live');
+
+        $secondLevel1 = $this->objFromFixture(SiteTree::class, 'secondLevel1');
+        $this->checkLastEditedFor($secondLevel1, 'TopTwoLevels', $lastEdited);
+    }
+
+
+
+
     // @todo This appears to be flakey in CI, fix
     public function testCacheKeyLevel3TopTwoLevelsLastEdited(): void
     {
         $thirdLevel1 = $this->objFromFixture(SiteTree::class, 'thirdLevel1');
-        $lastEdited = $thirdLevel1->LastEdited;
+        $lastEdited = $this->getLastEditedTopTwoLevels($thirdLevel1);
 
         \sleep(2);
         $thirdLevel2 = $this->objFromFixture(SiteTree::class, 'thirdLevel2');
@@ -184,8 +186,8 @@ class CacheKeyHelperTest extends FunctionalTest
         $thirdLevel2->publish('Stage', 'Live');
 
 
-        foreach(SiteTree::get() as $st) {
-            error_log($st->Title . " --> \t" . $st->LastEdited);
+        foreach (SiteTree::get() as $st) {
+            \error_log($st->Title . " --> \t" . $st->LastEdited);
         }
 
         // reload and then check that the timestamps are the same  Third level is NOT cache busted
@@ -193,6 +195,17 @@ class CacheKeyHelperTest extends FunctionalTest
         $this->checkLastEditedFor($thirdLevel1, 'TopTwoLevels', $lastEdited, false, true);
     }
 
+
+    private function getLastEditedTopTwoLevels($page)
+    {
+        $key = $page->CacheKeyLastEdited('', 'TopTwoLevels');
+
+        // remove leading underscore
+        $key = substr($key, 1);
+        error_log('KEY: ' . $key);
+
+        return $key;
+    }
 
 
     /** @throws \Exception */
