@@ -2,7 +2,7 @@ name: Module CI
 
 on:
   push:
-    branches: [ main, RENAME_EXTENSION ]
+    branches: [ main ]
   pull_request:
     branches: [ main ]
 
