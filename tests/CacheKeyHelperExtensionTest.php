@@ -6,9 +6,9 @@ namespace WebOfTalent\Cache\Tests;
 
 use SilverStripe\CMS\Model\SiteTree;
 use SilverStripe\Dev\FunctionalTest;
-use WebOfTalent\Cache\CacheKeyHelper;
+use WebOfTalent\Cache\CacheKeyHelperExtension;
 
-class CacheKeyHelperTest extends FunctionalTest
+class CacheKeyHelperExtensionTest extends FunctionalTest
 {
     protected static $fixture_file = 'fixtures.yml';
 
@@ -26,7 +26,7 @@ class CacheKeyHelperTest extends FunctionalTest
             $page->publishRecursive();
         }
 
-        CacheKeyHelper::resetCache();
+        CacheKeyHelperExtension::resetCache();
     }
 
 
@@ -220,7 +220,7 @@ class CacheKeyHelperTest extends FunctionalTest
         }
 
         // the prefix test can be anything and should differ for different fragments of a page
-        CacheKeyHelper::resetCache();
+        CacheKeyHelperExtension::resetCache();
         $cacheKey = $page->cacheKeyLastEdited('test', $entity);
         $this->assertStringStartsWith('test_', $cacheKey);
         $dateOnly = \substr($cacheKey, 5);

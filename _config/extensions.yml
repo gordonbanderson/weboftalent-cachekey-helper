@@ -3,4 +3,4 @@ Name: weboftalent-cachekey-extension
 ---
 SilverStripe\CMS\Model\SiteTree:
   extensions:
-    - WebOfTalent\Cache\CacheKeyHelper
+    - WebOfTalent\Cache\CacheKeyHelperExtension
