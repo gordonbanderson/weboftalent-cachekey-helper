@@ -115,6 +115,11 @@ class CacheKeyHelperExtension extends DataExtension
     }
 
 
+    /**
+     * This is used in testing only to simulate a new request in between tests
+     *
+     * @return void
+     */
     public static function resetCache(): void
     {
         self::$cachekeysinitialised = false;
@@ -143,6 +148,7 @@ class CacheKeyHelperExtension extends DataExtension
             return;
         }
 
+        // This is normally the current request, but for testing it is overridden
         if (\is_null($this->requestProvider)) {
             $this->requestProvider = Injector::inst()->get('WebOfTalent\Cache\CurrentControllerRequestProvider');
         }
@@ -151,12 +157,15 @@ class CacheKeyHelperExtension extends DataExtension
         // @phpstan-ignore-next-line
         $classes = $this->getOwner()->config()->get(SiteTree::class);
 
+        // start the formation of SQL, here with the child page last edited
         $sql = 'SELECT (SELECT MAX("LastEdited") FROM "SiteTree_Live" WHERE "ParentID" = '.
-            $this->owner->ID.') AS "ChildPageLastEdited",';
+            $this->owner->ID.') AS "ChildPage\LastEdited",';
 
         if ($classes) {
             foreach ($classes as $classname) {
                 $tableName = $this->getTableName($classname);
+
+                error_log('CN 1=' . $classname);
 
                 $stanza = '(SELECT MAX("LastEdited") from "SiteTree_Live" '
                     . "WHERE \"ClassName\" = '". $classname."')  AS \"{$tableName}LastEdited\" , ";
@@ -164,14 +173,17 @@ class CacheKeyHelperExtension extends DataExtension
             }
         }
 
-        // get the classes to get a cache key with that are not in the site tree
+
+        // get the classes to get a cache key with that are not in the site tree.  There is no need
+        // to deal with likes of child and sibling pages in this case
+
         // @phpstan-ignore-next-line
         $classes = $this->getOwner()->config()->get(DataObject::class);
 
         if ($classes) {
             foreach ($classes as $classname) {
                 $tableName = $this->getTableName($classname);
-                $stanza = '(SELECT MAX("LastEdited") from "'.$tableName.'") AS "' .$tableName .'LastEdited", ';
+                $stanza = '(SELECT MAX("LastEdited") from "'.$tableName.'") AS "' .$classname .'\LastEdited", ';
                 $sql .= $stanza;
             }
         }
@@ -189,7 +201,7 @@ class CacheKeyHelperExtension extends DataExtension
 						AND "ShowInMenus" = 1
 					) AS "TopLevels"
 
-				  ) AS "TopTwoLevelsLastEdited",';
+				  ) AS "TopTwoLevels\LastEdited",';
 
         // if there is a member, get the last edited - cache for 5 mins (300 seconds), as Member is
         // saved every page request to update last visited
@@ -197,20 +209,20 @@ class CacheKeyHelperExtension extends DataExtension
   //          Member::currentUserID().') as CurrentMemberLastEdited,';
 
         // site config
-        $sql .= '(SELECT "LastEdited" FROM "SiteConfig") AS "SiteConfigLastEdited", ';
+        $sql .= '(SELECT "LastEdited" FROM "SiteConfig") AS "SilverStripe\SiteConfig\SiteConfig\LastEdited", ';
 
         // the current actual page
         // @phpstan-ignore-next-line
         $sql .= "(SELECT \"LastEdited\" FROM \"SiteTree_Live\" WHERE \"ID\"=".$this->getOwner()->ID.
-                ") AS \"CurrentPageLastEdited\", ";
+                ") AS \"CurrentPage\LastEdited\", ";
 
         // siblings, needed for side menu
         $sql .= '(SELECT MAX("LastEdited") FROM "SiteTree_Live" WHERE "ParentID"='.
             // @phpstan-ignore-next-line
-            $this->getOwner()->ParentID.') as "SiblingPageLastEdited", ';
+            $this->getOwner()->ParentID.') as "SiblingPage\LastEdited", ';
 
         // add a clause to check if any page on the site has changed, a major cache buster
-        $sql .= '(SELECT MAX("LastEdited") FROM "SiteTree_Live") AS "SiteTreeLastEdited";';
+        $sql .= '(SELECT MAX("LastEdited") FROM "SiteTree_Live") AS "SilverStripe\CMS\Model\SiteTree\LastEdited";';
 
 
         $records = DB::query($sql)->first();
@@ -223,6 +235,8 @@ class CacheKeyHelperExtension extends DataExtension
         }
         self::$cachekeysinitialised = true;
         self::$last_edited_values = $records;
+
+        error_log(print_r($records, true));
     }
 
 
