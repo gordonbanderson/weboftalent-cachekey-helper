@@ -15,8 +15,15 @@ use SilverStripe\ORM\DB;
 // @phpcs:disable SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingTraversableTypeHintSpecification
 class CacheKeyHelper extends DataExtension
 {
+
     /** @var \WebOfTalent\Cache\RequestProvider | null */
     private $requestProvider ;
+
+    /** @var array<string, bool> */
+    // @phpstan-ignore-next-line
+    private static $indexes = [
+        'LastEdited' => true,
+        ];
 
     /** @var array<string,string> <Name>LastEdited -> some calculated key value */
     private static $last_edited_values = [];
