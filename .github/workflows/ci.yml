@@ -2,7 +2,7 @@ name: Module CI
 
 on:
   push:
-    branches: [ main, INDEX_LAST_EDITED ]
+    branches: [ main ]
   pull_request:
     branches: [ main ]
 
