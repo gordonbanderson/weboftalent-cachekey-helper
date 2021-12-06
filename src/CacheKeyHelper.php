@@ -16,12 +16,12 @@ use SilverStripe\ORM\DB;
 class CacheKeyHelper extends DataExtension
 {
 
-    private static $indexes = [
-        'LastEdited' => true
-        ];
-
     /** @var \WebOfTalent\Cache\RequestProvider | null */
     private $requestProvider ;
+
+    private static $indexes = [
+        'LastEdited' => true,
+        ];
 
     /** @var array<string,string> <Name>LastEdited -> some calculated key value */
     private static $last_edited_values = [];
