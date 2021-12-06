@@ -13,7 +13,7 @@ use SilverStripe\ORM\DB;
 
 // @phpcs:disable PSR1.Methods.CamelCapsMethodName.NotCamelCaps
 // @phpcs:disable SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingTraversableTypeHintSpecification
-class CacheKeyHelper extends DataExtension
+class CacheKeyHelperExtension extends DataExtension
 {
 
     /** @var \WebOfTalent\Cache\RequestProvider | null */
