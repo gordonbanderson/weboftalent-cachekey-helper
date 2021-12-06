@@ -15,6 +15,11 @@ use SilverStripe\ORM\DB;
 // @phpcs:disable SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingTraversableTypeHintSpecification
 class CacheKeyHelper extends DataExtension
 {
+
+    private static $indexes = [
+        'LastEdited' => true
+        ];
+
     /** @var \WebOfTalent\Cache\RequestProvider | null */
     private $requestProvider ;
 
