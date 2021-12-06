@@ -19,6 +19,8 @@ class CacheKeyHelper extends DataExtension
     /** @var \WebOfTalent\Cache\RequestProvider | null */
     private $requestProvider ;
 
+    /** @var array<string, bool> */
+    // @phpstan-ignore-next-line
     private static $indexes = [
         'LastEdited' => true,
         ];
