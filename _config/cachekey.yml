@@ -2,8 +2,12 @@
 Name: cachekeyhelpercore
 ---
 WebOfTalent\Cache\CacheKeyHelperExtension:
+
+  # @todo Is this necessary?  Or maybe to filter to a subclass of SiteTree
   SilverStripe\CMS\Model\SiteTree:
-    - Page
+    - \Page
+
+  # Non SiteTree
   SilverStripe\ORM\DataObject:
     - SilverStripe\Security\Member
     - SilverStripe\Security\Group
