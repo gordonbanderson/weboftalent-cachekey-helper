@@ -82,7 +82,7 @@ class CacheKeyHelperExtensionTest extends FunctionalTest
 
     public function testCacheKeySiteTreeLastEdited(): void
     {
-        $this->checkLastEditedFor($this->homePage, 'SiteTree');
+        $this->checkLastEditedFor($this->homePage, 'SilverStripe\CMS\Model\SiteTree');
     }
 
 
