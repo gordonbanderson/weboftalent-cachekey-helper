@@ -221,7 +221,7 @@ class CacheKeyHelperExtension extends DataExtension
         $sql .= '(SELECT MAX("LastEdited") FROM "SiteTree_Live") AS "SilverStripe\CMS\Model\SiteTree\LastEdited";';
 
         $records = DB::query($sql)->first();
-        
+
         // @TODO is this necessary as POST vars would override
         // now append the request params, stored as PARAM_<parameter name> -> parameter value
         foreach ($this->requestProvider->getRequest()->requestVars() as $k => $v) {
