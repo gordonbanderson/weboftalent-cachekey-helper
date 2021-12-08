@@ -107,8 +107,8 @@ class CacheKeyHelperExtension extends DataExtension
     {
         $this->prime_cache_keys();
         $result = '';
-        if (isset(self::$last_edited_values[$classname.'LastEdited'])) {
-            $result = $prefix.'_'.self::$last_edited_values[$classname.'LastEdited'];
+        if (isset(self::$last_edited_values[$classname.'\LastEdited'])) {
+            $result = $prefix.'_'.self::$last_edited_values[$classname.'\LastEdited'];
         }
 
         return $result;
