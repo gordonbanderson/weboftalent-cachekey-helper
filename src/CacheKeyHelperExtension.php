@@ -117,8 +117,6 @@ class CacheKeyHelperExtension extends DataExtension
 
     /**
      * This is used in testing only to simulate a new request in between tests
-     *
-     * @return void
      */
     public static function resetCache(): void
     {
@@ -164,8 +162,6 @@ class CacheKeyHelperExtension extends DataExtension
         if ($classes) {
             foreach ($classes as $classname) {
                 $tableName = $this->getTableName($classname);
-
-                error_log('CN 1=' . $classname);
 
                 $stanza = '(SELECT MAX("LastEdited") from "SiteTree_Live" '
                     . "WHERE \"ClassName\" = '". $classname."')  AS \"{$classname}\\LastEdited\" , ";
@@ -224,11 +220,8 @@ class CacheKeyHelperExtension extends DataExtension
         // add a clause to check if any page on the site has changed, a major cache buster
         $sql .= '(SELECT MAX("LastEdited") FROM "SiteTree_Live") AS "SilverStripe\CMS\Model\SiteTree\LastEdited";';
 
-        error_log('SQL:' . $sql);
-
         $records = DB::query($sql)->first();
-
-
+        
         // @TODO is this necessary as POST vars would override
         // now append the request params, stored as PARAM_<parameter name> -> parameter value
         foreach ($this->requestProvider->getRequest()->requestVars() as $k => $v) {
@@ -236,8 +229,6 @@ class CacheKeyHelperExtension extends DataExtension
         }
         self::$cachekeysinitialised = true;
         self::$last_edited_values = $records;
-
-        error_log(print_r($records, true));
     }
 
 
