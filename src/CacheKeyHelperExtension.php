@@ -168,7 +168,7 @@ class CacheKeyHelperExtension extends DataExtension
                 error_log('CN 1=' . $classname);
 
                 $stanza = '(SELECT MAX("LastEdited") from "SiteTree_Live" '
-                    . "WHERE \"ClassName\" = '". $classname."')  AS \"{$tableName}LastEdited\" , ";
+                    . "WHERE \"ClassName\" = '". $classname."')  AS \"{$classname}\\LastEdited\" , ";
                 $sql .= $stanza;
             }
         }
@@ -224,6 +224,7 @@ class CacheKeyHelperExtension extends DataExtension
         // add a clause to check if any page on the site has changed, a major cache buster
         $sql .= '(SELECT MAX("LastEdited") FROM "SiteTree_Live") AS "SilverStripe\CMS\Model\SiteTree\LastEdited";';
 
+        error_log('SQL:' . $sql);
 
         $records = DB::query($sql)->first();
 
